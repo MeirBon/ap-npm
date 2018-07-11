@@ -40,6 +40,7 @@
     "rimraf": "^2.6.1",
     "semver": "^5.3.0",
     "sqlite3": "^4.0.1",
+    "ts-md5": "^1.2.4",
     "typeorm": "^0.2.7"
   },
   "keywords": [

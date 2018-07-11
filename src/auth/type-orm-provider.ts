@@ -2,8 +2,8 @@ import "reflect-metadata";
 import { sha512 } from "js-sha512";
 import AuthProvider from "./auth-provider";
 import { Connection, createConnection } from "typeorm";
-import User from "./entity/user";
-import Token from "./entity/token";
+import User from "./entities/user";
+import Token from "./entities/token";
 import { ConnectionOptions } from "typeorm/connection/ConnectionOptions";
 
 export default class TypeOrmProvider extends AuthProvider {

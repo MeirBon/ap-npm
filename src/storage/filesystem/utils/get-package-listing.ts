@@ -20,30 +20,35 @@ const getVersions = async function(packageLocation: string): Promise<string[]> {
 
 
 export default async function(storageLocation: string): Promise<Map<string, any>> {
-  const storageListing: any = {};
+  const storageListing = new Map();
 
   const parts = await fs.readdir(storageLocation);
 
   await Promise.all(parts.map(async (part: string) => {
     if (part.indexOf("@") !== -1) {
-      if (typeof storageListing[part] !== "object") {
-        storageListing[part] = {};
+      if (!storageListing.has(part)) {
+        storageListing.set(part, {});
       }
 
-      const scopedParts = await
-        fs.readdir(path.join(storageLocation, part));
+      const scopedParts = await fs.readdir(path.join(storageLocation, part));
 
-      await scopedParts.forEach(async (scopedPart) => {
-        const scopedLocation = path.join(storageLocation, part, scopedPart);
+      for (let i = 0; i < scopedParts.length; i++) {
+        const scopedLocation = path.join(storageLocation, part, scopedParts[i]);
         if ((await fs.lstat(scopedLocation)).isDirectory()) {
-          if (!storageListing[part].hasOwnProperty(scopedPart)) {
-            storageListing[part][scopedPart] = await getVersions(scopedLocation);
+          try {
+            storageListing.get(part)[scopedParts[i]] = await getVersions(scopedLocation);
+          } catch (err) {
+            // invalid pkg
           }
         }
-      });
+      }
     } else {
       const location = path.join(storageLocation, part);
-      storageListing[part] = await getVersions(location);
+      try {
+        storageListing.set(part, await getVersions(location));
+      } catch (err) {
+        // invalid pkg
+      }
     }
   }));
 

@@ -43,7 +43,7 @@ export default class Filesystem {
     return getPackage(request, this.storageLocation);
   }
 
-  public async getPackageJson(request: IRequest) {
+  public async getPackageJson(request: IRequest): Promise<any> {
     return getPackageJson(request, this.storageLocation);
   }
 

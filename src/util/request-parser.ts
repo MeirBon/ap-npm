@@ -11,6 +11,11 @@ export default function(req: Request, res: Response, next: NextFunction) {
     req.body = { "npm-args": req.body };
   }
 
+  if (splitUrl[1] === "api") {
+    next();
+    return;
+  }
+
   if (splitUrl[2] === "package") {
     if (splitUrl[3].indexOf("@") !== -1) {
       req.body._scope = splitUrl[3];

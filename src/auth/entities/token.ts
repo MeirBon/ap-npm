@@ -7,7 +7,7 @@ import {
 import User from "./user";
 
 @Entity()
-export default class Token extends BaseEntity {
+class Token extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -17,3 +17,9 @@ export default class Token extends BaseEntity {
   @ManyToOne(type => User, user => user.tokens)
   user: User;
 }
+
+export default Token;
+
+export {
+  Token
+};

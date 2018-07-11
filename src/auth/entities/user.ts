@@ -7,7 +7,7 @@ import {
 import Token from "./token";
 
 @Entity()
-export default class User extends BaseEntity {
+class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -24,3 +24,8 @@ export default class User extends BaseEntity {
   @JoinColumn()
   tokens: Token[];
 }
+
+export default User;
+export {
+  User
+};

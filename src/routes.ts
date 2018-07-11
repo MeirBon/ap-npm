@@ -19,6 +19,21 @@ export default function InitRoutes(app: Application, container: Container) {
   app.use(requestParser);
   app.use(paramParser);
 
+  app.get("/api/packages", function (req, res) {
+    const route: Route = container.get("route-api-package");
+    return route.process(req, res);
+  });
+
+  app.get("/api/package/:package?", function (req, res) {
+    const route: Route = container.get("route-api-package");
+    return route.process(req, res);
+  });
+
+  app.get("/api/package/:scope/:package", function (req, res) {
+    const route: Route = container.get("route-api-package");
+    return route.process(req, res);
+  });
+
   app.get("/-/ping", function(req, res) {
     res.send({
       message: "ap-npm is running"
