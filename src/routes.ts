@@ -8,9 +8,9 @@ import { AccessType } from "./auth";
 import Route from "./routes/route";
 
 export default function InitRoutes(app: Application, container: Container) {
-  let access = new Access(container.get("auth"));
-  let logger = container.get("logger");
-  let adminAccess = function(req: Request, res: Response, next: NextFunction) {
+  const access = new Access(container.get("auth"));
+  const logger = container.get("logger");
+  const adminAccess = function(req: Request, res: Response, next: NextFunction) {
     container.get("admin-access").process(req, res, next);
   };
 
@@ -65,8 +65,8 @@ export default function InitRoutes(app: Application, container: Container) {
   // *** INSTALL ***
   // Get version of package
   app.get("/:package/:version?", access.can(AccessType.Access), function(req, res) {
-    const route: Route = req.params.write ? container.get('route-package-unpublish') :
-      container.get('route-package-get-json');
+    const route: Route = req.params.write ? container.get("route-package-unpublish") :
+      container.get("route-package-get-json");
     return route.process(req, res);
   });
   // Request for package file data

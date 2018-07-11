@@ -15,9 +15,9 @@ export default class PackagePublish extends Route {
 
 
   public async process(req: Request, res: Response): Promise<void> {
-    let packageData = req.body;
-    let packageName = packageData._packageName;
-    let packageScope = packageData._scope;
+    const packageData = req.body;
+    const packageName = packageData._packageName;
+    const packageScope = packageData._scope;
 
     if (!packageData._attachments) {
       this.deprecateUpdater(packageData).then((result) => {
@@ -43,7 +43,7 @@ export default class PackagePublish extends Route {
 
   private async writePackage(req: Request, res: Response): Promise<void> {
     let distTag = "~invalid";
-    for (let key in req.body["dist-tags"]) {
+    for (const key in req.body["dist-tags"]) {
       distTag = key;
     }
 
@@ -52,9 +52,9 @@ export default class PackagePublish extends Route {
       return;
     }
 
-    let packageName = req.body._packageName;
-    let packageScope = req.body._scope;
-    let packageData = req.body;
+    const packageName = req.body._packageName;
+    const packageScope = req.body._scope;
+    const packageData = req.body;
 
     const hasDistTag = await this.packageValidator.hasDistTag({
         name: packageName,
@@ -89,8 +89,8 @@ export default class PackagePublish extends Route {
   }
 
   private async writeNewPackage(req: Request, res: Response): Promise<void> {
-    let packageName = req.body._packageName;
-    let packageScope = req.body._scope;
+    const packageName = req.body._packageName;
+    const packageScope = req.body._scope;
     const result = await this.storage.writeNewPackage({
       name: packageName,
       scope: packageScope

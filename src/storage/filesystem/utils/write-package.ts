@@ -4,8 +4,8 @@ import { IRequest } from "../index";
 import Logger from "../../../util/logger";
 
 export default async (request: IRequest, packageData: any, storageLocation: string, logger: Logger): Promise<boolean> => {
-  let packageName = request.name;
-  let packageScope = request.scope;
+  const packageName = request.name;
+  const packageScope = request.scope;
 
   const packageInfoLocation = packageScope ? join(storageLocation, packageScope, packageName, "package.json")
     : join(storageLocation, packageName, "package.json");
@@ -34,10 +34,10 @@ export default async (request: IRequest, packageData: any, storageLocation: stri
 
   packageJson.versions[newVersion] = packageData.versions[newVersion];
 
-  let distTags = packageJson["dist-tags"];
-  let newDistTags = packageData["dist-tags"];
+  const distTags = packageJson["dist-tags"];
+  const newDistTags = packageData["dist-tags"];
 
-  for (let key in newDistTags) {
+  for (const key in newDistTags) {
     distTags[key] = newDistTags[key];
   }
 
@@ -57,4 +57,4 @@ export default async (request: IRequest, packageData: any, storageLocation: stri
   }
 
   return true;
-}
+};

@@ -4,9 +4,9 @@ import * as path from "path";
 import Logger from "../util/logger";
 
 export default class InitCommand {
-  private host: string;
-  private port: number;
-  private ssl: boolean;
+  private readonly host: string;
+  private readonly port: number;
+  private readonly ssl: boolean;
   private logger: Logger;
 
   constructor(config: Map<string, any>, logger: Logger) {
@@ -17,8 +17,8 @@ export default class InitCommand {
   }
 
   public async run(pathToProject: string) {
-    let spawn = child_process.spawnSync;
-    let shell = (cmd: string, opts: string[]) => {
+    const spawn = child_process.spawnSync;
+    const shell = (cmd: string, opts: string[]) => {
       process.stdin.pause();
       return spawn(cmd, opts, {
         stdio: [0, 1, 2]
@@ -40,9 +40,9 @@ export default class InitCommand {
       };
     }
     this.logger.info("\nUpdating package.json with publishConfig:", publishConfig);
-    let packageJson = JSON.parse(file);
+    const packageJson = JSON.parse(file);
     packageJson.publishConfig = publishConfig;
-    await fs.writeFile(path.join(pathToProject, "package.json"), JSON.stringify(packageJson, null, 2), { "mode": "0664" });
+    await fs.writeFile(path.join(pathToProject, "package.json"), JSON.stringify(packageJson, undefined, 2), { "mode": "0664" });
     this.logger.info("ap-npm project created in: " + pathToProject + "\n");
   }
 }

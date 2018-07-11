@@ -4,8 +4,8 @@ import { IRequest } from "../index";
 import Logger from "../../../util/logger";
 
 export default async (request: IRequest, packageData: any, storageLocation: string, logger: Logger): Promise<boolean> => {
-  let packageName = request.name;
-  let packageScope = request.scope;
+  const packageName = request.name;
+  const packageScope = request.scope;
   let attachmentName = "~invalid";
 
   for (const key in packageData._attachments) {
@@ -26,7 +26,7 @@ export default async (request: IRequest, packageData: any, storageLocation: stri
   const packageJsonPath = join(folderPath, "package.json");
 
   await fs.writeFile(filePath, Buffer.from(packageData._attachments[attachmentName].data, "base64"), { "mode": "0777" });
-  let packageJson = packageData;
+  const packageJson = packageData;
   delete packageJson._attachments;
 
   try {
@@ -42,4 +42,4 @@ export default async (request: IRequest, packageData: any, storageLocation: stri
     logger.info(`Published package: ${packageName}`);
   }
   return true;
-}
+};

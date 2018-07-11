@@ -15,21 +15,26 @@ commander
         if (!result) {
           throw Error(`Config file: ${config} does not exist`);
         }
-        const container = containerInit(config);
-        const logger = container.get("logger");
-        logger.info("using config: " + config + "\n");
 
-        let command: ServeCommand = container.get("command-serve");
-        command.run().then(() => 0);
+        fs.readFile(config).then(file => {
+          const container = containerInit(JSON.parse(file));
+          const logger = container.get("logger");
+          logger.info("using config: " + config + "\n");
+
+          const command: ServeCommand = container.get("command-serve");
+          command.run().then(() => 0);
+        });
       });
     } else {
       const configLocation = path.join(__dirname, "../", "config.json");
-      const container = containerInit(configLocation);
-      const logger = container.get("logger");
-      logger.info("using default config\n");
+      fs.readFile(configLocation).then((file) => {
+        const container = containerInit(JSON.parse(file));
+        const logger = container.get("logger");
+        logger.info("using default config\n");
 
-      let command: ServeCommand = container.get("command-serve");
-      command.run().then(() => 0);
+        const command: ServeCommand = container.get("command-serve");
+        command.run().then(() => 0);
+      });
     }
   });
 
@@ -37,33 +42,41 @@ commander
   .command("config [prop] [value]")
   .description("list or set config properties")
   .action(function(property, value) {
-    let configLocation = path.join(__dirname, "../", "config.json");
-    let container = containerInit(configLocation);
-    let command = container.get("command-config");
+    const configLocation = path.join(__dirname, "../", "config.json");
+    fs.readFile(configLocation).then(file => {
+      const container = containerInit(JSON.parse(file));
+      const command = container.get("command-config");
 
-    if (!property || !value) {
-      command.listConfig(configLocation).then(() => 0);
-    } else {
-      command.updateProp(property, value).then(() => 0);
-    }
+      if (!property || !value) {
+        command.listConfig(configLocation).then(() => 0);
+      } else {
+        command.updateProp(property, value).then(() => 0);
+      }
+    });
   });
 
 commander
   .command("init")
   .description("init a npm project using ap-npm publishConfig")
   .action(function() {
-    let container = containerInit(path.join(__dirname, "../", "config.json"));
-    let command = container.get("command-init");
-    command.run(process.cwd());
+    const configLocation = path.join(__dirname, "../", "config.json");
+    fs.readFile(configLocation).then((file) => {
+      const container = containerInit(JSON.parse(file));
+      const command = container.get("command-init");
+      command.run(process.cwd());
+    });
   });
 
 commander
   .command("version")
   .alias("v")
   .action(function() {
-    let logger = containerInit(path.join(__dirname, "../", "config.json")).get("logger");
-    fs.readFile(path.join(__dirname, "../package.json")).then((file) => {
-      logger.log(JSON.parse(file).version);
+    const configLocation = path.join(__dirname, "../", "config.json");
+    fs.readFile(configLocation).then(file => {
+      const logger = containerInit(JSON.parse(file)).get("logger");
+      fs.readFile(path.join(__dirname, "../package.json")).then((file) => {
+        logger.log(JSON.parse(file).version);
+      });
     });
   });
 

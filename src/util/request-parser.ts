@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 
 export default function(req: Request, res: Response, next: NextFunction) {
-  let url = decodeURIComponent(req.url);
-  let splitUrl = url.split("/");
+  const url = decodeURIComponent(req.url);
+  const splitUrl = url.split("/");
   let scope;
   let packageName;
   let requestedFile;

@@ -1,8 +1,8 @@
 import * as fs from "async-file";
 import * as path from "path";
 
-let getVersions = async function(packageLocation: string): Promise<string[]> {
-  let versionArray = [];
+const getVersions = async function(packageLocation: string): Promise<string[]> {
+  const versionArray = [];
   const packageJson: any = JSON.parse(await fs.readFile(path.join(packageLocation, "package.json")));
 
   const versionsObject = packageJson.versions;
@@ -20,7 +20,7 @@ let getVersions = async function(packageLocation: string): Promise<string[]> {
 
 
 export default async function(storageLocation: string): Promise<Map<string, any>> {
-  let storageListing: any = {};
+  const storageListing: any = {};
 
   const parts = await fs.readdir(storageLocation);
 

@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import Container from "./util/container";
 import StorageInit from "./init/storage-init";
 import RoutesInit from "./init/routes-init";
@@ -7,13 +6,14 @@ import CommandInit from "./init/command-init";
 import UtilInit from "./init/util-init";
 import AdminInit from "./init/admin-init";
 import Logger from "./util/logger";
+import { Url } from "url";
 
-export default function Init(configFile: string) {
-  let container = new Container();
+export default function Init(config: IConfig) {
+  const container = new Container();
 
   container.set("config", function() {
-    let map = new Map();
-    const object = JSON.parse(fs.readFileSync(configFile).toString('utf8'));
+    const map = new Map();
+    const object: any = config;
     Object.keys(object).forEach(key => {
       map.set(key, object[key]);
     });
@@ -32,4 +32,29 @@ export default function Init(configFile: string) {
   AdminInit(container);
 
   return container;
+}
+
+export interface IConfig {
+  workDir: string;
+  storage: {
+    directory: string
+  };
+  port: number;
+  hostname: string;
+  proxyEnabled: boolean;
+  proxyUrl: Url;
+  auth: {
+    users: {
+      canPublish: boolean;
+      canAccess: boolean;
+    };
+    register: true;
+    public: false;
+    remove: true
+  };
+  ssl: {
+    enabled: boolean;
+    key: string;
+    cert: string;
+  };
 }

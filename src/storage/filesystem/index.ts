@@ -1,15 +1,15 @@
-import * as path from 'path';
+import * as path from "path";
 
-import removePackage from './utils/remove-package';
-import removePackageVersion from './utils/remove-package-version';
-import getPackage from './utils/get-package';
-import getPackageJson from './utils/get-package-json';
-import isPackageAvailable from './utils/is-package-available';
-import isVersionAvailable from './utils/is-version-available';
-import updatePackageJson from './utils/update-packagejson';
-import writePackage from './utils/write-package';
-import writeNewPackage from './utils/write-new-package';
-import getPackageListing from './utils/get-package-listing';
+import removePackage from "./utils/remove-package";
+import removePackageVersion from "./utils/remove-package-version";
+import getPackage from "./utils/get-package";
+import getPackageJson from "./utils/get-package-json";
+import isPackageAvailable from "./utils/is-package-available";
+import isVersionAvailable from "./utils/is-version-available";
+import updatePackageJson from "./utils/update-packagejson";
+import writePackage from "./utils/write-package";
+import writeNewPackage from "./utils/write-new-package";
+import getPackageListing from "./utils/get-package-listing";
 import Logger from "../../util/logger";
 
 export default class Filesystem {
@@ -20,7 +20,7 @@ export default class Filesystem {
   constructor(config: Map<string, any>, logger: Logger) {
     this.config = config;
     this.logger = logger;
-    this.storageLocation = path.join(this.config.get('workDir'), this.config.get('storage').directory);
+    this.storageLocation = path.join(this.config.get("workDir"), this.config.get("storage").directory);
   }
 
   public async removePackage(request: IRequest) {
@@ -65,8 +65,8 @@ export default class Filesystem {
 }
 
 export interface IRequest {
-  name: string,
-  scope?: string,
-  version?: string,
-  file?: string
+  name: string;
+  scope?: string;
+  version?: string;
+  file?: string;
 }

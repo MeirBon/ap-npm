@@ -4,10 +4,11 @@ import InitRoutes from "../routes";
 import Auth from "../auth";
 import JsonProvider from "../auth/json-provider";
 import Validator from "../util/validator";
+import PackageProxy from "../util/package-proxy";
 
 export default function(container: Container) {
   container.set("express", function() {
-    let app = express();
+    const app = express();
     InitRoutes(app, container);
     app.set("env", process.env.NODE_ENV || "production");
     return app;
@@ -23,16 +24,15 @@ export default function(container: Container) {
 
   container.set("auth-adapter", function() {
     let AuthAdapter;
-    if (container.get("config").get('auth').adapter === "./src/auth/json-db") {
+    if (container.get("config").get("auth").adapter === "./src/auth/json-db") {
       return new JsonProvider(container.get("config"));
     }
-    AuthAdapter = require(container.get("config").get('auth').adapter).default;
+    AuthAdapter = require(container.get("config").get("auth").adapter).default;
     return new AuthAdapter(container.get("config"));
   });
 
   container.set("proxy", function() {
-    let Util = require("../util/package-proxy").default;
-    return new Util(container.get("config").proxyUrl);
+    return new PackageProxy(container.get("config").get("proxyUrl"));
   });
 
 }

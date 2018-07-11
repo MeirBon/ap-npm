@@ -13,13 +13,13 @@ export default class AdminAccess {
       res.status(401).header("WWW-Authenticate", "Basic realm=\"ap-npm\"").send("Unauthorized");
     } else {
       if (req.headers.authorization) {
-        let userLogin = (Buffer.from(req.headers.authorization.substr(6), "base64")).toString("UTF-8");
-        let userInfo = userLogin.split(":");
-        let username = userInfo[0];
-        let password = userInfo[1];
+        const userLogin = (Buffer.from(req.headers.authorization.substr(6), "base64")).toString("UTF-8");
+        const userInfo = userLogin.split(":");
+        const username = userInfo[0];
+        const password = userInfo[1];
 
         this.auth.verifyLogin(username, password).then((loggedIn) => {
-          if (loggedIn === true) {
+          if (typeof loggedIn === "string") {
             next();
           } else {
             res.status(401).send("Invalid username and password, unauthorized");

@@ -9,9 +9,9 @@ export default class Validator {
   }
 
   public async isVersionHigher(request: IValidatorRequest, distTag: string): Promise<boolean> {
-    let packageName = request.name;
-    let packageVersion = request.version;
-    let packageScope = request.scope;
+    const packageName = request.name;
+    const packageVersion = request.version;
+    const packageScope = request.scope;
 
     if (!packageVersion) {
       throw Error("No version given to check");
@@ -26,8 +26,8 @@ export default class Validator {
   }
 
   public async hasDistTag(request: IValidatorRequest, distTag: string): Promise<boolean> {
-    let packageName = request.name;
-    let packageScope = request.scope;
+    const packageName = request.name;
+    const packageScope = request.scope;
     const pkgJson = await this.storage.getPackageJson({
       name: packageName,
       scope: packageScope
@@ -38,7 +38,7 @@ export default class Validator {
 }
 
 interface IValidatorRequest {
-  name: string,
-  scope?: string,
-  version?: string
+  name: string;
+  scope?: string;
+  version?: string;
 }

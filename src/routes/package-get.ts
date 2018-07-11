@@ -11,9 +11,9 @@ export default class PackageGet extends Route {
   }
 
   public async process(req: Request, res: Response): Promise<void> {
-    let packageName = req.body._packageName;
-    let packageScope = req.body._scope;
-    let fileName = req.body._requestedFile;
+    const packageName = req.body._packageName;
+    const packageScope = req.body._scope;
+    const fileName = req.body._requestedFile;
 
     try {
       const data = await this.storage.getPackage({

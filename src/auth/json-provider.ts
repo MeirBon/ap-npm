@@ -10,27 +10,34 @@ import { IAuthSettings } from "./index";
  * ap-npm was created to be easily extensible (which alternatives weren't).
  * We promote implementing a proper authentication method.
  */
-export default class JsonProvider implements AuthProvider {
+export default class JsonProvider extends AuthProvider {
   private readonly dbLocation: string;
   private settings: IAuthSettings;
   private users: Map<string, IUser>;
+  private tokens: Map<string, string>;
 
   constructor(config: Map<string, any>) {
+    super();
     this.dbLocation = join(config.get("workDir"), "db");
     this.settings = config.get("auth");
     this.users = new Map();
+    this.tokens = new Map<string, string>();
     this.initUserDB();
+    this.initTokenDB().then(() => 0);
   }
 
-  public async userLogin(username: string, password: string): Promise<boolean> {
+  public async userLogin(username: string, password: string): Promise<string | boolean> {
     const user = this.users.get(username);
-    if (user) {
-      return user.password === sha512(password);
+    if (user && user.password === sha512(password)) {
+      const token = await this.generateToken();
+      this.tokens.set(token, username);
+      await this.updateTokenDB();
+      return token;
     }
     return false;
   }
 
-  public async userAdd(username: string, password: string, email: string): Promise<boolean> {
+  public async userAdd(username: string, password: string, email: string): Promise<string | boolean> {
     if (this.settings.register === true) {
       if (this.users.has(username)) {
         return false;
@@ -43,7 +50,11 @@ export default class JsonProvider implements AuthProvider {
       });
 
       this.updateUserDB();
-      return true;
+
+      const token = await this.generateToken();
+      this.tokens.set(token, username);
+      await this.updateTokenDB();
+      return token;
     }
     return false;
   }
@@ -64,40 +75,66 @@ export default class JsonProvider implements AuthProvider {
   }
 
 
-  // Just here for local auth
-  private initUserDB() {
+  private async initUserDB() {
     const user_db_path = join(this.dbLocation, "user_db.json");
-    fs.readFile(user_db_path, {
-      encoding: "utf8"
-    }).then(value => {
-      const obj = JSON.parse(value);
+
+    try {
+      const userDb = await fs.readFile(user_db_path, { encoding: "utf8" });
+
+      const obj = JSON.parse(userDb);
       this.users = new Map();
       Object.keys(obj).forEach((key) => {
         this.users.set(key, obj[key]);
       });
-    }).catch(err => {
-      fs.writeFile(user_db_path, JSON.stringify({})).then(() => {
+    } catch (err) {
+      await fs.writeFile(user_db_path, JSON.stringify({})).then(() => {
         this.users = new Map();
       });
-    });
+    }
   }
 
-  // Just here for local auth
-  private updateUserDB() {
-    let user_db_path = join(this.dbLocation, "user_db.json");
-    let object: any = {};
+  private async updateUserDB() {
+    const user_db_path = join(this.dbLocation, "user_db.json");
+    const object: any = {};
     this.users.forEach((user: IUser, key: string) => {
       object[key] = user;
     });
 
-    fs.writeFile(user_db_path, JSON.stringify(object, null, 2), { mode: "0777" }).then(() => {
-      this.initUserDB();
-    });
+    await fs.writeFile(user_db_path, JSON.stringify(object, undefined, 2), { mode: "0777" });
+  }
+
+  private async updateTokenDB() {
+    const tokenLocation = join(this.dbLocation, "user_tokens.json");
+    await fs.writeFile(tokenLocation, JSON.stringify(this.tokens, undefined, 2), { mode: "0777" });
+  }
+
+  private async initTokenDB() {
+    const user_token_path = join(this.dbLocation, "user_tokens.json");
+    try {
+      const object: any = JSON.parse(await fs.readFile(user_token_path));
+      this.tokens = new Map();
+      Object.keys(object).forEach((key) => {
+        this.tokens.set(key, object[key]);
+      });
+    } catch (e) {
+      this.tokens = new Map<string, any>();
+    }
+  }
+
+  public async verifyToken(token: string): Promise<boolean> {
+    if (this.tokens.has(token)) {
+      const tkn = this.tokens.get(token);
+      if (tkn) {
+        return this.users.has(tkn);
+      }
+    }
+
+    return false;
   }
 }
 
 interface IUser {
-  username: string,
-  password: string,
-  email: string
+  username: string;
+  password: string;
+  email: string;
 }

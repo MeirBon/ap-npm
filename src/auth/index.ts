@@ -4,10 +4,10 @@ import AuthProvider from "./auth-provider";
 import Logger from "../util/logger";
 
 export default class Auth {
-  private dbLocation: string;
+  private readonly dbLocation: string;
   private settings: IAuthSettings;
   private adapter: AuthProvider;
-  private tokens: Map<string, any>;
+  private readonly tokens: Map<string, any>;
 
   constructor(adapter: AuthProvider, config: Map<string, any>, logger: Logger) {
     this.dbLocation = join(config.get("workDir"), "db");
@@ -16,19 +16,17 @@ export default class Auth {
     this.adapter = adapter;
 
     try {
-      this.storageInit();
+      this.storageInit().then(() => 0);
     } catch (err) {
       logger.error("Failed to initialize auth-structure in " + this.dbLocation);
     }
 
-    this.initTokenDB().then(() => {
-      this.settings = config.get("auth");
-      this.adapter = adapter;
-    });
+    this.settings = config.get("auth");
+    this.adapter = adapter;
   }
 
   async storageInit(): Promise<boolean> {
-    let userTokens = join(this.dbLocation, "user_tokens.json");
+    const userTokens = join(this.dbLocation, "user_tokens.json");
     const dbExists = await fs.exists(this.dbLocation);
     if (!dbExists) {
       await fs.mkdirp(this.dbLocation);
@@ -42,12 +40,20 @@ export default class Auth {
     return true;
   }
 
-  public async userLogin(username: string, password: string, email: string): Promise<boolean> {
-    return this.adapter.userLogin(username, password, email);
+  public async userLogin(username: string, password: string, email: string): Promise<string> {
+    const token = await this.adapter.userLogin(username, password, email);
+    if (typeof token === "string") {
+      return token;
+    }
+    throw Error("Unauthorized user");
   }
 
-  public async userAdd(username: string, password: string, email: string): Promise<boolean> {
-    return this.adapter.userAdd(username, password, email);
+  public async userAdd(username: string, password: string, email: string): Promise<string> {
+    const token = await this.adapter.userAdd(username, password, email);
+    if (typeof token === "string") {
+      return token;
+    }
+    throw Error("Unauthorized user");
   }
 
   public async userRemove(username: string, password: string): Promise<boolean> {
@@ -55,7 +61,7 @@ export default class Auth {
   }
 
   public async userLogout(token: string): Promise<void> {
-    let user_tokens_path = join(this.dbLocation, "user_tokens.json");
+    const user_tokens_path = join(this.dbLocation, "user_tokens.json");
     let allTokens;
 
     try {
@@ -66,7 +72,7 @@ export default class Auth {
       allTokens = {};
     }
 
-    await fs.writeFile(user_tokens_path, JSON.stringify(allTokens, null, 2), { mode: "0777" });
+    await fs.writeFile(user_tokens_path, JSON.stringify(allTokens, undefined, 2), { mode: "0777" });
     await this.updateTokenDB();
   }
 
@@ -82,20 +88,22 @@ export default class Auth {
     accessToken = accessToken.substr(7);
     const usersSettings = this.settings.users;
     if (accessType === AccessType.Access && usersSettings.canAccess === true) {
-      await this.verifyToken(accessToken); // throws error
-      return true;
+      return this.adapter.verifyToken(accessToken);
     }
 
     if (accessType === AccessType.Publish && usersSettings.canPublish === true) {
-      await this.verifyToken(accessToken);
-      return true;
+      return this.adapter.verifyToken(accessToken);
     }
 
     throw new Error("Unauthorized");
   }
 
-  public async verifyLogin(username: string, password: string): Promise<boolean> {
-    return this.adapter.userLogin(username, password);
+  public async verifyLogin(username: string, password: string): Promise<string> {
+    const token = await this.adapter.userLogin(username, password);
+    if (typeof token === "string") {
+      return token;
+    }
+    throw Error("Unauthorized user");
   }
 
   public async verifyToken(token: string): Promise<string> {
@@ -106,39 +114,9 @@ export default class Auth {
   }
 
   private async updateTokenDB(): Promise<void> {
-    let tokenLocation = join(this.dbLocation, "user_tokens.json");
-    await fs.writeFile(tokenLocation, JSON.stringify(this.tokens, null, 2), { mode: "0777" });
+    const tokenLocation = join(this.dbLocation, "user_tokens.json");
+    await fs.writeFile(tokenLocation, JSON.stringify(this.tokens, undefined, 2), { mode: "0777" });
   }
-
-  public async addTokenToDB(username: string, token: string) {
-    let tokenLocation = join(this.dbLocation, "user_tokens.json");
-    let tokens;
-
-    const tokenLocExists = await fs.exists(tokenLocation);
-    if (tokenLocExists) {
-      tokens = JSON.parse(await fs.readFile(tokenLocation));
-    } else {
-      tokens = {};
-    }
-
-    tokens[token] = username;
-    await fs.writeFile(tokenLocation, JSON.stringify(tokens, null, 2), { mode: "0777" });
-    await this.initTokenDB();
-  }
-
-  private async initTokenDB() {
-    let user_token_path = join(this.dbLocation, "user_tokens.json");
-    try {
-      const object: any = JSON.parse(await fs.readFile(user_token_path));
-      this.tokens = new Map();
-      Object.keys(object).forEach((key) => {
-        this.tokens.set(key, object[key]);
-      });
-    } catch (e) {
-      this.tokens = new Map<string, any>();
-    }
-  }
-
 }
 
 export enum AccessType {
@@ -147,12 +125,12 @@ export enum AccessType {
 }
 
 export interface IAuthSettings {
-  adapter: string,
+  adapter: string;
   users: {
-    canPublish: boolean,
-    canAccess: boolean
-  },
-  register: boolean,
-  public: boolean,
-  remove: boolean
+    canPublish: boolean;
+    canAccess: boolean;
+  };
+  register: boolean;
+  public: boolean;
+  remove: boolean;
 }

@@ -23,8 +23,8 @@ export default class ServeCommand {
   public async run() {
     if (this.ssl.enabled) {
       if (await fs.exists(this.ssl.key) && await fs.exists(this.ssl.cert)) {
-        let key = await fs.readFile(this.ssl.key);
-        let cert = await fs.readFile(this.ssl.cert);
+        const key = await fs.readFile(this.ssl.key);
+        const cert = await fs.readFile(this.ssl.cert);
 
         Https.createServer({
           key: key,
@@ -48,7 +48,7 @@ export default class ServeCommand {
 }
 
 interface ISslConfig {
-  enabled: boolean,
-  key: string,
-  cert: string
+  enabled: boolean;
+  key: string;
+  cert: string;
 }

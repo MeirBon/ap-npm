@@ -3,7 +3,7 @@ import Route from "../routes/route";
 import { Request, Response } from "express";
 
 export default class PackageProxy extends Route {
-  private proxyUrl: string;
+  private readonly proxyUrl: string;
 
   constructor(proxyUrl: string) {
     super();
@@ -12,7 +12,7 @@ export default class PackageProxy extends Route {
 
   public async process(req: Request, res: Response): Promise<void> {
     try {
-      let pkgData = req.body;
+      const pkgData = req.body;
       let urlPath;
 
       if (pkgData._scopedName) {
@@ -21,7 +21,7 @@ export default class PackageProxy extends Route {
         urlPath = "/" + pkgData._packageName;
       }
 
-      let url = this.proxyUrl + urlPath;
+      const url = this.proxyUrl + urlPath;
       https.get(url,
         function(response) {
           response.pipe(res);

@@ -11,8 +11,8 @@ export default class PackageGetDistTags extends Route {
   }
 
   public async process(req: Request, res: Response): Promise<void> {
-    let packageName = req.body._packageName;
-    let packageScope = req.body._scope;
+    const packageName = req.body._packageName;
+    const packageScope = req.body._scope;
 
     try {
       const packageJson = await this.storage.getPackageJson({
@@ -21,7 +21,7 @@ export default class PackageGetDistTags extends Route {
       });
 
       if (typeof packageJson === "object") {
-        let distTags = packageJson["dist-tags"];
+        const distTags = packageJson["dist-tags"];
         if (distTags) {
           res.send(distTags);
         }

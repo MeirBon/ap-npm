@@ -5,12 +5,12 @@ import Filesystem from "../storage/filesystem";
 
 export default function(container: Container) {
 
-  let storageLocation = join(container.get("config").get('workDir'), container.get("config").get('storage').directory);
+  const storageLocation = join(container.get("config").get("workDir"), container.get("config").get("storage").directory);
   fs.exists(storageLocation).then((result) => {
     if (!result) {
       return fs.mkdirp(storageLocation);
     }
-  }).catch (err => {
+  }).catch(err => {
     container.get("logger").error("Failed to initialize filesystem-structure in " + storageLocation, err);
   });
 

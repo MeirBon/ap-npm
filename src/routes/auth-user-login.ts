@@ -1,4 +1,3 @@
-import * as crypto from "crypto";
 import Auth from "../auth";
 import { Request, Response } from "express";
 import Route from "./route";
@@ -12,44 +11,40 @@ export default class AuthUserLogin extends Route {
   }
 
   public async process(req: Request, res: Response): Promise<void> {
-    let userInfo: IUserInfo = {
+    const userInfo: IUserInfo = {
       username: req.body.name,
       password: req.body.password,
       email: req.body.email,
       type: req.body.type
     };
 
-    const result = await this.loginUser(userInfo);
-
-    if (result === true) {
-      const token = await this.generateToken(userInfo);
-      res.status(201);
-      res.send({ token });
+    try {
+      const result = await this.loginUser(userInfo);
+      if (typeof result === "string") {
+        res.status(201).send({ token: result });
+        return;
+      }
+    } catch (err) {
     }
-    else {
+
+    try {
       const result = await this.createUser(userInfo);
-      if (result === true) {
-        const token = await this.generateToken(userInfo);
-        res.status(201);
-        res.send({ token });
+      if (typeof result === "string") {
+        res.status(201).send({ token: result });
       } else {
         res.status(401).send({ error: "Cannot create user" });
       }
+    } catch (err) {
+      res.status(401).send({ error: "Cannot create user" });
     }
   }
 
-  private async createUser(userInfo: IUserInfo): Promise<boolean> {
+  private async createUser(userInfo: IUserInfo): Promise<string | boolean> {
     return this.auth.userAdd(userInfo.username, userInfo.password, userInfo.email);
   }
 
-  private async loginUser(userInfo: IUserInfo): Promise<boolean> {
+  private async loginUser(userInfo: IUserInfo): Promise<string | boolean> {
     return this.auth.userLogin(userInfo.username, userInfo.password, userInfo.email);
-  }
-
-  private async generateToken(userInfo: IUserInfo): Promise<string> {
-    let token = crypto.randomBytes(64).toString("hex");
-    await this.auth.addTokenToDB(userInfo.username, token);
-    return token;
   }
 }
 

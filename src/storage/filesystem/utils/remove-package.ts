@@ -3,8 +3,8 @@ import { join } from "path";
 import { IRequest } from "../index";
 
 export default async (request: IRequest, storageLocation: string): Promise<boolean> => {
-  let packageName = request.name;
-  let packageScope = request.scope;
+  const packageName = request.name;
+  const packageScope = request.scope;
 
   const packageLocation = packageScope ? join(storageLocation, packageScope, packageName)
     : join(storageLocation, packageName);
@@ -15,4 +15,4 @@ export default async (request: IRequest, storageLocation: string): Promise<boole
 
   await fs.rimraf(packageLocation);
   return true;
-}
+};

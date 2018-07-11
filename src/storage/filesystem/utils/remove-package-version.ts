@@ -8,14 +8,14 @@ import updatePackageJson from "./update-packagejson";
 
 export default async (request: IRequest, storageLocation: string): Promise<boolean> => {
 
-  let packageName = request.name;
-  let packageScope = request.scope;
-  let packageVersion = request.version;
+  const packageName = request.name;
+  const packageScope = request.scope;
+  const packageVersion = request.version;
 
   const packageLocation = packageScope ? join(storageLocation, packageScope, packageName)
     : join(storageLocation, packageName);
 
-  let tarballLocation = join(packageLocation, packageName + packageVersion + ".tgz");
+  const tarballLocation = join(packageLocation, packageName + packageVersion + ".tgz");
 
   const pkgExists = await fs.exists(packageLocation);
 
@@ -48,4 +48,4 @@ export default async (request: IRequest, storageLocation: string): Promise<boole
   }
 
   return await updatePackageJson(request, packageJson, storageLocation);
-}
+};

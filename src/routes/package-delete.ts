@@ -3,12 +3,13 @@ import Route from "./route";
 import Filesystem from "../storage/filesystem";
 import Validator from "../util/validator";
 import { Request, Response } from "express";
+import { version } from "punycode";
 
 export default class PackageDelete extends Route {
   private storage: Filesystem;
   private packageValidator: Validator;
   private config: Map<string, any>;
-  private remove: boolean;
+  private readonly remove: boolean;
 
   constructor(storage: Filesystem, validator: Validator, config: Map<string, any>) {
     super();
@@ -34,8 +35,8 @@ export default class PackageDelete extends Route {
     }
 
 
-    let packageName = req.body._packageName;
-    let packageScope = req.body._scope;
+    const packageName = req.body._packageName;
+    const packageScope = req.body._scope;
     let referer = req.headers.referer;
     let packageVersion;
 
@@ -49,10 +50,10 @@ export default class PackageDelete extends Route {
     }
 
     if (referer.indexOf("@") > -1) {
-      let spliced = referer.split("@");
+      const spliced = referer.split("@");
       packageVersion = spliced[spliced.length - 1];
     } else {
-      let spliced = referer.split(" ");
+      const spliced = referer.split(" ");
       packageVersion = spliced[0];
     }
 
@@ -72,7 +73,7 @@ export default class PackageDelete extends Route {
       });
 
       if (result === true) {
-        res.status(200).send({ ok: "Packageversion deleted" });
+        res.status(200).send({ ok: `Package version: ${version} deleted` });
       } else {
         res.status(500).send({ message: "Cannot delete package from filesystem" });
       }

@@ -11,9 +11,9 @@ export default class PackageDeleteDistTags extends Route {
   }
 
   public async process(req: Request, res: Response): Promise<void> {
-    let packageName = req.body._packageName;
-    let packageScope = req.body._scope;
-    let distTag = req.body._disttag;
+    const packageName = req.body._packageName;
+    const packageScope = req.body._scope;
+    const distTag = req.body._disttag;
 
     try {
       const packageJson = await this.storage.getPackageJson({

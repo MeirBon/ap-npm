@@ -8,8 +8,8 @@ import { IRequest } from "../index";
  * @return {Object} package.json
  */
 export default async (request: IRequest, storageLocation: string) => {
-  let packageName = request.name;
-  let packageScope = request.scope;
+  const packageName = request.name;
+  const packageScope = request.scope;
 
   const jsonPath = packageScope ? join(storageLocation, packageScope, packageName, "package.json")
     : join(storageLocation, packageName, "package.json");
@@ -20,4 +20,4 @@ export default async (request: IRequest, storageLocation: string) => {
   } else {
     throw Error(`package.json of ${packageName} does not exist`);
   }
-}
+};

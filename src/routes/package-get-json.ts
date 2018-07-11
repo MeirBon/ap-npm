@@ -23,18 +23,17 @@ export default class PackageGetJson extends Route {
         scope: req.body._scope
       });
 
-      if (typeof packageJson === 'object') {
+      if (typeof packageJson === "object") {
         res.status(200).send(packageJson);
       } else {
         res.status(404).send({ message: "Package not found" });
       }
-    } catch(err) {
+    } catch (err) {
       if (this.proxyEnabled) {
-        await this.proxy.process(req, res)
+        await this.proxy.process(req, res);
       } else {
-        res.status(404).send({message: err});
+        res.status(404).send({ message: err });
       }
     }
   }
-
 }

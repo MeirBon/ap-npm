@@ -3,9 +3,9 @@ import * as fs from "async-file";
 import { IRequest } from "../index";
 
 export default async function(request: IRequest, storageLocation: string): Promise<Buffer> {
-  let packageName = request.name;
-  let packageScope = request.scope;
-  let fileName = request.file;
+  const packageName = request.name;
+  const packageScope = request.scope;
+  const fileName = request.file;
 
   if (fileName) {
 
