@@ -4,16 +4,11 @@
   "description": "Private Authenticated NPM Repository",
   "main": "cli.js",
   "scripts": {
-    "build": "babel src -d dist",
-    "test": "mocha ./test ./test/util ./test/storage ./test/routes ./test/commands --reporter=spec --full-trace --compilers js:babel-core/register",
-    "lint": "jshint ./src && jshint ./test && eslint ./src && eslint ./test",
-    "start": "babel-node --presets es2015,stage-2 ./src/cli.js"
-  },
-  "babel": {
-    "presets": [
-      "es2015",
-      "stage-2"
-    ]
+    "build-ts": "tsc",
+    "watch-ts": "tsc -w",
+    "start": "npm run serve",
+    "serve": "node lib/cli.js s",
+    "tslint": "tslint -c tslint.json -p tsconfig.json"
   },
   "bin": {
     "ap-npm": "./bin/ap-npm"
@@ -73,7 +68,7 @@
     "ts-node": "^3.0.0",
     "tslint": "^5.0.0",
     "tslint-config-prettier": "^1.1.0",
-    "typescript": "^2.3.0"
+    "typescript": "^2.9.2"
   },
   "directories": {
     "test": "test"
