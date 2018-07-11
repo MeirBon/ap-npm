@@ -3,54 +3,49 @@ import * as path from "path";
 
 let getVersions = async function(packageLocation: string): Promise<string[]> {
   let versionArray = [];
-  const packageJson = new Map(JSON.parse(
-    await fs.readFile(path.join(packageLocation, "package.json"))
-  ));
+  const packageJson: any = JSON.parse(await fs.readFile(path.join(packageLocation, "package.json")));
 
-  const versionsObject = packageJson.get("versions");
+  const versionsObject = packageJson.versions;
 
   if (versionsObject) {
-    for (let key in versionsObject) {
+    for (const key in versionsObject) {
       if (versionsObject.hasOwnProperty(key)) {
         versionArray.push(key);
       }
     }
   }
+
   return versionArray;
 };
 
 
 export default async function(storageLocation: string): Promise<Map<string, any>> {
-  let storageListing = new Map<string, any>();
+  let storageListing: any = {};
 
   const parts = await fs.readdir(storageLocation);
 
-  for (const part in parts) {
+  await Promise.all(parts.map(async (part: string) => {
     if (part.indexOf("@") !== -1) {
-      if (!storageListing.has(part)) {
-        storageListing.set(part, new Map<string, any>());
+      if (typeof storageListing[part] !== "object") {
+        storageListing[part] = {};
       }
 
       const scopedParts = await
         fs.readdir(path.join(storageLocation, part));
 
-      for (const scopedPart in scopedParts) {
-        let scopedLocation = path.join(storageLocation, part, scopedPart);
+      await scopedParts.forEach(async (scopedPart) => {
+        const scopedLocation = path.join(storageLocation, part, scopedPart);
         if ((await fs.lstat(scopedLocation)).isDirectory()) {
-          const prt: Map<string, any> = storageListing.get(part);
-
-          if (prt) {
-            if (!prt.hasOwnProperty(scopedPart)) {
-              prt.set(scopedPart, await getVersions(scopedLocation));
-            }
+          if (!storageListing[part].hasOwnProperty(scopedPart)) {
+            storageListing[part][scopedPart] = await getVersions(scopedLocation);
           }
         }
-      }
+      });
     } else {
-      let location = path.join(storageLocation, part);
-      storageListing.set(part, await getVersions(location));
+      const location = path.join(storageLocation, part);
+      storageListing[part] = await getVersions(location);
     }
-  }
+  }));
 
   return storageListing;
 }

@@ -13,8 +13,12 @@ export default class AdminAllRoute extends Route {
   }
 
   public async process(req: Request, res: Response): Promise<void> {
-    const listing = await this.storage.getPackageListing();
-    res.status(200).send(listing);
+    try {
+      const listing = await this.storage.getPackageListing();
+      res.status(200).send(listing);
+    } catch (err) {
+      res.send(err);
+    }
   }
 
 }
