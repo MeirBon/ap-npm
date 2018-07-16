@@ -8,7 +8,12 @@ class Package extends RestObject {
   private versions: string[];
   private packageJson: object;
 
-  constructor(name: string, versions: string[], packageJson: object, scope?: string) {
+  constructor(
+    name: string,
+    versions: string[],
+    packageJson: object,
+    scope?: string
+  ) {
     super();
     this.name = name;
     this.scope = scope;

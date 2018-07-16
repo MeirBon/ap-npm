@@ -19,7 +19,11 @@ export default function(container: Container) {
   });
 
   container.set("auth", function() {
-    return new Auth(container.get("auth-adapter"), container.get("config"), container.get("logger"));
+    return new Auth(
+      container.get("auth-adapter"),
+      container.get("config"),
+      container.get("logger")
+    );
   });
 
   container.set("auth-adapter", function() {
@@ -34,5 +38,4 @@ export default function(container: Container) {
   container.set("proxy", function() {
     return new PackageProxy(container.get("config").get("proxyUrl"));
   });
-
 }

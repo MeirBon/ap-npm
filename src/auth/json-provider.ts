@@ -26,7 +26,10 @@ export default class JsonProvider extends AuthProvider {
     this.initTokenDB().then(() => 0);
   }
 
-  public async userLogin(username: string, password: string): Promise<string | boolean> {
+  public async userLogin(
+    username: string,
+    password: string
+  ): Promise<string | boolean> {
     const user = this.users.get(username);
     if (user && user.password === sha512(password)) {
       const token = await this.generateToken();
@@ -37,7 +40,11 @@ export default class JsonProvider extends AuthProvider {
     return false;
   }
 
-  public async userAdd(username: string, password: string, email: string): Promise<string | boolean> {
+  public async userAdd(
+    username: string,
+    password: string,
+    email: string
+  ): Promise<string | boolean> {
     if (this.settings.register === true) {
       if (this.users.has(username)) {
         return false;
@@ -62,10 +69,13 @@ export default class JsonProvider extends AuthProvider {
   /*
    * Doesn't get used yet, npm doesn't implement it and neither have we (yet)
    */
-  public async userRemove(username: string, password: string): Promise<boolean> {
+  public async userRemove(
+    username: string,
+    password: string
+  ): Promise<boolean> {
     if (this.settings.remove === true) {
       const user = this.users.get(username);
-      if (typeof(user) === "object" && user.password === sha512(password)) {
+      if (typeof user === "object" && user.password === sha512(password)) {
         this.users.delete(username);
         this.updateUserDB();
         return true;
@@ -73,7 +83,6 @@ export default class JsonProvider extends AuthProvider {
     }
     return false;
   }
-
 
   private async initUserDB() {
     const user_db_path = join(this.dbLocation, "user_db.json");
@@ -83,7 +92,7 @@ export default class JsonProvider extends AuthProvider {
 
       const obj = JSON.parse(userDb);
       this.users = new Map();
-      Object.keys(obj).forEach((key) => {
+      Object.keys(obj).forEach(key => {
         this.users.set(key, obj[key]);
       });
     } catch (err) {
@@ -100,12 +109,18 @@ export default class JsonProvider extends AuthProvider {
       object[key] = user;
     });
 
-    await fs.writeFile(user_db_path, JSON.stringify(object, undefined, 2), { mode: "0777" });
+    await fs.writeFile(user_db_path, JSON.stringify(object, undefined, 2), {
+      mode: "0777"
+    });
   }
 
   private async updateTokenDB() {
     const tokenLocation = join(this.dbLocation, "user_tokens.json");
-    await fs.writeFile(tokenLocation, JSON.stringify(this.tokens, undefined, 2), { mode: "0777" });
+    await fs.writeFile(
+      tokenLocation,
+      JSON.stringify(this.tokens, undefined, 2),
+      { mode: "0777" }
+    );
   }
 
   private async initTokenDB() {
@@ -113,7 +128,7 @@ export default class JsonProvider extends AuthProvider {
     try {
       const object: any = JSON.parse(await fs.readFile(user_token_path));
       this.tokens = new Map();
-      Object.keys(object).forEach((key) => {
+      Object.keys(object).forEach(key => {
         this.tokens.set(key, object[key]);
       });
     } catch (e) {

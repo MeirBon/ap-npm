@@ -11,7 +11,8 @@ export default async (request: IRequest, storageLocation: string) => {
   const packageName = request.name;
   const packageScope = request.scope;
 
-  const jsonPath = packageScope ? join(storageLocation, packageScope, packageName, "package.json")
+  const jsonPath = packageScope
+    ? join(storageLocation, packageScope, packageName, "package.json")
     : join(storageLocation, packageName, "package.json");
 
   const exists = await fs.exists(jsonPath);

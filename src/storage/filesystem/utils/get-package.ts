@@ -2,14 +2,17 @@ import { join } from "path";
 import * as fs from "async-file";
 import { IRequest } from "../index";
 
-export default async function(request: IRequest, storageLocation: string): Promise<Buffer> {
+export default async function(
+  request: IRequest,
+  storageLocation: string
+): Promise<Buffer> {
   const packageName = request.name;
   const packageScope = request.scope;
   const fileName = request.file;
 
   if (fileName) {
-
-    const fileLocation = packageScope ? join(storageLocation, packageScope, packageName, fileName)
+    const fileLocation = packageScope
+      ? join(storageLocation, packageScope, packageName, fileName)
       : join(storageLocation, packageName, fileName);
 
     return fs.readFile(fileLocation);

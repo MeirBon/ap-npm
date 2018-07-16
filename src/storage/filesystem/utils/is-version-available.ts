@@ -2,12 +2,16 @@ import { join } from "path";
 import * as fs from "async-file";
 import { IRequest } from "../index";
 
-export default async (request: IRequest, storageLocation: string): Promise<boolean> => {
+export default async (
+  request: IRequest,
+  storageLocation: string
+): Promise<boolean> => {
   const packageName = request.name;
   const packageScope = request.scope;
   const packageVersion = request.version;
 
-  const packageInfoLocation = packageScope ? join(storageLocation, packageScope, packageName, "package.json")
+  const packageInfoLocation = packageScope
+    ? join(storageLocation, packageScope, packageName, "package.json")
     : join(storageLocation, packageName, "package.json");
 
   try {
@@ -20,11 +24,23 @@ export default async (request: IRequest, storageLocation: string): Promise<boole
       }
     }
 
-    const fileName = packageScope ? packageName.substr(packageScope.length + 1) : packageName;
-    const fileLoc = packageScope ? join(storageLocation, packageScope, packageName, packageName + "-" + packageVersion + ".tgz")
-      : join(storageLocation, packageName, fileName + "-" + packageVersion + ".tgz");
+    const fileName = packageScope
+      ? packageName.substr(packageScope.length + 1)
+      : packageName;
+    const fileLoc = packageScope
+      ? join(
+          storageLocation,
+          packageScope,
+          packageName,
+          packageName + "-" + packageVersion + ".tgz"
+        )
+      : join(
+          storageLocation,
+          packageName,
+          fileName + "-" + packageVersion + ".tgz"
+        );
 
-    return versionExists && await fs.exists(fileLoc);
+    return versionExists && (await fs.exists(fileLoc));
   } catch (err) {
     return false;
   }

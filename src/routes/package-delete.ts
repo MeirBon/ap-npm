@@ -11,7 +11,11 @@ export default class PackageDelete extends Route {
   private config: Map<string, any>;
   private readonly remove: boolean;
 
-  constructor(storage: Filesystem, validator: Validator, config: Map<string, any>) {
+  constructor(
+    storage: Filesystem,
+    validator: Validator,
+    config: Map<string, any>
+  ) {
     super();
     this.storage = storage;
     this.packageValidator = validator;
@@ -33,7 +37,6 @@ export default class PackageDelete extends Route {
       res.status(403).send({ message: "Not allowed to delete packages" });
       return;
     }
-
 
     const packageName = req.body._packageName;
     const packageScope = req.body._scope;
@@ -58,12 +61,17 @@ export default class PackageDelete extends Route {
     }
 
     if (packageVersion === "unpublish") {
-      const result = await this.storage.removePackage({ name: packageName, scope: packageScope });
+      const result = await this.storage.removePackage({
+        name: packageName,
+        scope: packageScope
+      });
 
       if (result === true) {
         res.status(200).send({ ok: "Package deleted" });
       } else {
-        res.status(500).send({ message: "Cannot delete package from filesystem" });
+        res
+          .status(500)
+          .send({ message: "Cannot delete package from filesystem" });
       }
     } else if (semver.valid(packageVersion)) {
       const result = await this.storage.removePackageVersion({
@@ -75,7 +83,9 @@ export default class PackageDelete extends Route {
       if (result === true) {
         res.status(200).send({ ok: `Package version: ${version} deleted` });
       } else {
-        res.status(500).send({ message: "Cannot delete package from filesystem" });
+        res
+          .status(500)
+          .send({ message: "Cannot delete package from filesystem" });
       }
     }
   }

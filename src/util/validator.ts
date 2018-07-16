@@ -8,7 +8,10 @@ export default class Validator {
     this.storage = storage;
   }
 
-  public async isVersionHigher(request: IValidatorRequest, distTag: string): Promise<boolean> {
+  public async isVersionHigher(
+    request: IValidatorRequest,
+    distTag: string
+  ): Promise<boolean> {
     const packageName = request.name;
     const packageVersion = request.version;
     const packageScope = request.scope;
@@ -22,10 +25,16 @@ export default class Validator {
       scope: packageScope
     });
 
-    return semver.satisfies(packageVersion, ">" + pkgJson["dist-tags"][distTag]);
+    return semver.satisfies(
+      packageVersion,
+      ">" + pkgJson["dist-tags"][distTag]
+    );
   }
 
-  public async hasDistTag(request: IValidatorRequest, distTag: string): Promise<boolean> {
+  public async hasDistTag(
+    request: IValidatorRequest,
+    distTag: string
+  ): Promise<boolean> {
     const packageName = request.name;
     const packageScope = request.scope;
     const pkgJson = await this.storage.getPackageJson({

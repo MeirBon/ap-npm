@@ -8,7 +8,11 @@ export default abstract class AuthProvider {
    * @param {string} email
    * @returns {Promise<string>}
    */
-  public abstract async userLogin(username: string, password: string, email?: string): Promise<string | boolean>;
+  public abstract async userLogin(
+    username: string,
+    password: string,
+    email?: string
+  ): Promise<string | boolean>;
 
   /**
    * Adds user to db and returns a token as string
@@ -17,7 +21,11 @@ export default abstract class AuthProvider {
    * @param {string} email
    * @returns {Promise<string>}
    */
-  public abstract async userAdd(username: string, password: string, email: string): Promise<string | boolean>;
+  public abstract async userAdd(
+    username: string,
+    password: string,
+    email: string
+  ): Promise<string | boolean>;
 
   /**
    * Removes user from db
@@ -25,7 +33,10 @@ export default abstract class AuthProvider {
    * @param {string} password
    * @returns {Promise<boolean>}
    */
-  public abstract async userRemove(username: string, password: string): Promise<boolean>;
+  public abstract async userRemove(
+    username: string,
+    password: string
+  ): Promise<boolean>;
 
   /**
    * Verifies whether token is a valid user

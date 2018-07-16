@@ -22,26 +22,37 @@ export default class ServeCommand {
 
   public async run() {
     if (this.ssl.enabled) {
-      if (await fs.exists(this.ssl.key) && await fs.exists(this.ssl.cert)) {
+      if ((await fs.exists(this.ssl.key)) && (await fs.exists(this.ssl.cert))) {
         const key = await fs.readFile(this.ssl.key);
         const cert = await fs.readFile(this.ssl.cert);
 
-        Https.createServer({
-          key: key,
-          cert: cert
-        }, this.app).listen(this.port, this.hostname, () => {
-          this.logger.info("ap-npm is listening on " + this.hostname + ":" + this.port + "\n");
+        Https.createServer(
+          {
+            key: key,
+            cert: cert
+          },
+          this.app
+        ).listen(this.port, this.hostname, () => {
+          this.logger.info(
+            "ap-npm is listening on " + this.hostname + ":" + this.port + "\n"
+          );
         });
       } else {
         this.config.get("ssl").enabled = false;
-        this.logger.warn("ssl setup failed, key/cert files don't exist\n" +
-          "ap-npm will run without being accessible using ssl\n");
+        this.logger.warn(
+          "ssl setup failed, key/cert files don't exist\n" +
+            "ap-npm will run without being accessible using ssl\n"
+        );
 
-        this.logger.info(`ap-npm is listening on http://${this.hostname}:${this.port}\n`);
+        this.logger.info(
+          `ap-npm is listening on http://${this.hostname}:${this.port}\n`
+        );
         this.app.listen(this.port);
       }
     } else {
-      this.logger.info(`ap-npm is listening on http://${this.hostname}:${this.port}\n`);
+      this.logger.info(
+        `ap-npm is listening on http://${this.hostname}:${this.port}\n`
+      );
       this.app.listen(this.port);
     }
   }

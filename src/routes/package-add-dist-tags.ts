@@ -17,7 +17,10 @@ export default class PackageAddDistTags extends Route {
     const distTagVersion = req.body["npm-args"];
 
     try {
-      const packageJson = await this.storage.getPackageJson({ name: packageName, scope: packageScope });
+      const packageJson = await this.storage.getPackageJson({
+        name: packageName,
+        scope: packageScope
+      });
 
       if (typeof packageJson === "object") {
         if (typeof packageJson.versions[distTagVersion] !== "object") {
@@ -26,7 +29,10 @@ export default class PackageAddDistTags extends Route {
         }
 
         packageJson["dist-tags"][distTag] = distTagVersion;
-        const result = await this.storage.updatePackageJson({ name: packageName, scope: packageScope }, packageJson);
+        const result = await this.storage.updatePackageJson(
+          { name: packageName, scope: packageScope },
+          packageJson
+        );
         if (result) {
           res.status(200).send({ ok: "dist-tags added" });
         } else {
@@ -38,4 +44,3 @@ export default class PackageAddDistTags extends Route {
     }
   }
 }
-

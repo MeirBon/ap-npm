@@ -15,13 +15,19 @@ export default class ApiPackageRoute extends Route {
       try {
         let pkg;
         if (req.params.scope !== undefined) {
-          pkg = await this.repository.getPackage(req.params.package, req.params.scope);
+          pkg = await this.repository.getPackage(
+            req.params.package,
+            req.params.scope
+          );
         } else {
-          pkg = await this.repository.getPackage(req.params.package, req.params.scope);
+          pkg = await this.repository.getPackage(
+            req.params.package,
+            req.params.scope
+          );
         }
 
         res.status(200).send({
-          "package": await pkg.toObject()
+          package: await pkg.toObject()
         });
       } catch (err) {
         res.status(404).send({
@@ -32,9 +38,11 @@ export default class ApiPackageRoute extends Route {
       const pkgs = await this.repository.getPackages();
       const pkgsObjs: Array<object> = [];
 
-      await Promise.all(pkgs.map(async (pkg) => {
-        pkgsObjs.push(await pkg.toObject());
-      }));
+      await Promise.all(
+        pkgs.map(async pkg => {
+          pkgsObjs.push(await pkg.toObject());
+        })
+      );
 
       res.status(200).send({
         packages: pkgsObjs

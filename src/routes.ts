@@ -10,7 +10,11 @@ import Route from "./routes/route";
 export default function InitRoutes(app: Application, container: Container) {
   const access = new Access(container.get("auth"));
   const logger = container.get("logger");
-  const adminAccess = function(req: Request, res: Response, next: NextFunction) {
+  const adminAccess = function(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     container.get("admin-access").process(req, res, next);
   };
 
@@ -19,17 +23,17 @@ export default function InitRoutes(app: Application, container: Container) {
   app.use(requestParser);
   app.use(paramParser);
 
-  app.get("/api/packages", function (req, res) {
+  app.get("/api/packages", function(req, res) {
     const route: Route = container.get("route-api-package");
     return route.process(req, res);
   });
 
-  app.get("/api/package/:package?", function (req, res) {
+  app.get("/api/package/:package?", function(req, res) {
     const route: Route = container.get("route-api-package");
     return route.process(req, res);
   });
 
-  app.get("/api/package/:scope/:package", function (req, res) {
+  app.get("/api/package/:scope/:package", function(req, res) {
     const route: Route = container.get("route-api-package");
     return route.process(req, res);
   });
@@ -76,45 +80,70 @@ export default function InitRoutes(app: Application, container: Container) {
     return route.process(req, res);
   });
 
-
   // *** INSTALL ***
   // Get version of package
-  app.get("/:package/:version?", access.can(AccessType.Access), function(req, res) {
-    const route: Route = req.params.write ? container.get("route-package-unpublish") :
-      container.get("route-package-get-json");
+  app.get("/:package/:version?", access.can(AccessType.Access), function(
+    req,
+    res
+  ) {
+    const route: Route = req.params.write
+      ? container.get("route-package-unpublish")
+      : container.get("route-package-get-json");
     return route.process(req, res);
   });
   // Request for package file data
-  app.get("/:package/-/:filename", access.can(AccessType.Access), function(req, res) {
+  app.get("/:package/-/:filename", access.can(AccessType.Access), function(
+    req,
+    res
+  ) {
     const route: Route = container.get("route-package-get");
     return route.process(req, res);
   });
 
   // *** DIST-TAGS ***
-  app.get("/-/package/:package/dist-tags", access.can(AccessType.Access), function(req, res) {
-    const route: Route = container.get("route-package-get-dist-tags");
-    return route.process(req, res);
-  });
-  app.delete("/-/package/:package/dist-tags/:tag", access.can(AccessType.Publish), function(req, res) {
-    const route: Route = container.get("route-package-delete-dist-tags");
-    return route.process(req, res);
-  });
-  app.put("/-/package/:package/dist-tags/:tag", access.can(AccessType.Publish), function(req, res) {
-    const route: Route = container.get("route-package-add-dist-tags");
-    return route.process(req, res);
-  });
-
+  app.get(
+    "/-/package/:package/dist-tags",
+    access.can(AccessType.Access),
+    function(req, res) {
+      const route: Route = container.get("route-package-get-dist-tags");
+      return route.process(req, res);
+    }
+  );
+  app.delete(
+    "/-/package/:package/dist-tags/:tag",
+    access.can(AccessType.Publish),
+    function(req, res) {
+      const route: Route = container.get("route-package-delete-dist-tags");
+      return route.process(req, res);
+    }
+  );
+  app.put(
+    "/-/package/:package/dist-tags/:tag",
+    access.can(AccessType.Publish),
+    function(req, res) {
+      const route: Route = container.get("route-package-add-dist-tags");
+      return route.process(req, res);
+    }
+  );
 
   // *** PUBLISH ***
-  app.put("/:package/:_rev?/:revision?", access.can(AccessType.Publish), function(req, res) {
-    const route: Route = container.get("route-package-publish");
-    return route.process(req, res);
-  });
+  app.put(
+    "/:package/:_rev?/:revision?",
+    access.can(AccessType.Publish),
+    function(req, res) {
+      const route: Route = container.get("route-package-publish");
+      return route.process(req, res);
+    }
+  );
 
-  app.delete("/:package/:_rev?/:revision?", access.can(AccessType.Publish), function(req, res) {
-    const route: Route = container.get("route-package-delete");
-    return route.process(req, res);
-  });
+  app.delete(
+    "/:package/:_rev?/:revision?",
+    access.can(AccessType.Publish),
+    function(req, res) {
+      const route: Route = container.get("route-package-delete");
+      return route.process(req, res);
+    }
+  );
 
   // To test if ap-npm is running
   app.get("/", function(req, res) {
@@ -123,7 +152,5 @@ export default function InitRoutes(app: Application, container: Container) {
     }
   });
 
-
   return app;
 }
-

@@ -16,20 +16,28 @@ class PackageRepository {
       if (key.charAt(0) === "@") {
         for (const k of Object.keys(packages.get(key))) {
           try {
-            pkgs.push(new Package(k, packages.get(key)[k],
-              await this.storage.getPackageJson({ name: k, scope: key }), key));
-          } catch (err) {
-          }
+            pkgs.push(
+              new Package(
+                k,
+                packages.get(key)[k],
+                await this.storage.getPackageJson({ name: k, scope: key }),
+                key
+              )
+            );
+          } catch (err) {}
         }
       } else {
         try {
-          pkgs.push(new Package(key, packages.get(key),
-            await this.storage.getPackageJson({
-              name: key
-            })
-          ));
-        } catch (err) {
-        }
+          pkgs.push(
+            new Package(
+              key,
+              packages.get(key),
+              await this.storage.getPackageJson({
+                name: key
+              })
+            )
+          );
+        } catch (err) {}
       }
     }
 

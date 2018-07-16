@@ -32,17 +32,24 @@ export default class InitCommand {
 
     if (this.ssl) {
       publishConfig = {
-        "registry": "https://" + this.host + ":" + this.port
+        registry: "https://" + this.host + ":" + this.port
       };
     } else {
       publishConfig = {
-        "registry": "http://" + this.host + ":" + this.port
+        registry: "http://" + this.host + ":" + this.port
       };
     }
-    this.logger.info("\nUpdating package.json with publishConfig:", publishConfig);
+    this.logger.info(
+      "\nUpdating package.json with publishConfig:",
+      publishConfig
+    );
     const packageJson = JSON.parse(file);
     packageJson.publishConfig = publishConfig;
-    await fs.writeFile(path.join(pathToProject, "package.json"), JSON.stringify(packageJson, undefined, 2), { "mode": "0664" });
+    await fs.writeFile(
+      path.join(pathToProject, "package.json"),
+      JSON.stringify(packageJson, undefined, 2),
+      { mode: "0664" }
+    );
     this.logger.info("ap-npm project created in: " + pathToProject + "\n");
   }
 }

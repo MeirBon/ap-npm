@@ -12,17 +12,21 @@ class UserRepository {
     createConnection({
       ...config,
       entities: [AuthUser, AuthToken]
-    }).then((connection) => {
-      this.connection = connection;
-    }).catch(err => console.log(err));
+    })
+      .then(connection => {
+        this.connection = connection;
+      })
+      .catch(err => console.log(err));
   }
 
   public async getUsers(): Promise<User[]> {
     const dbUsers = await this.connection.manager.find(AuthUser);
     const users: User[] = [];
-    await Promise.all(dbUsers.map(async (user: AuthUser) => {
-      users.push(new User(user));
-    }));
+    await Promise.all(
+      dbUsers.map(async (user: AuthUser) => {
+        users.push(new User(user));
+      })
+    );
     return users;
   }
 
@@ -35,7 +39,9 @@ class UserRepository {
   }
 
   public async getUserByUsername(username: string): Promise<User> {
-    const user = await this.connection.manager.findOne(AuthUser, { where: username });
+    const user = await this.connection.manager.findOne(AuthUser, {
+      where: username
+    });
     if (user) {
       return new User(user);
     }

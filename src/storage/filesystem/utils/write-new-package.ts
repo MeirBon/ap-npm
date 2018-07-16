@@ -3,7 +3,12 @@ import * as fs from "async-file";
 import { IRequest } from "../index";
 import Logger from "../../../util/logger";
 
-export default async (request: IRequest, packageData: any, storageLocation: string, logger: Logger): Promise<boolean> => {
+export default async (
+  request: IRequest,
+  packageData: any,
+  storageLocation: string,
+  logger: Logger
+): Promise<boolean> => {
   const packageName = request.name;
   const packageScope = request.scope;
   let attachmentName = "~invalid";
@@ -16,16 +21,22 @@ export default async (request: IRequest, packageData: any, storageLocation: stri
     throw Error("Invalid attachment name");
   }
 
-  const folderPath = packageScope ? join(storageLocation, packageScope, packageName)
+  const folderPath = packageScope
+    ? join(storageLocation, packageScope, packageName)
     : join(storageLocation, packageName);
-  const filePath = packageScope ? join(folderPath, attachmentName.substr(packageScope.length + 1))
+  const filePath = packageScope
+    ? join(folderPath, attachmentName.substr(packageScope.length + 1))
     : join(folderPath, attachmentName);
 
   await fs.mkdirp(folderPath);
 
   const packageJsonPath = join(folderPath, "package.json");
 
-  await fs.writeFile(filePath, Buffer.from(packageData._attachments[attachmentName].data, "base64"), { "mode": "0777" });
+  await fs.writeFile(
+    filePath,
+    Buffer.from(packageData._attachments[attachmentName].data, "base64"),
+    { mode: "0777" }
+  );
   const packageJson = packageData;
   delete packageJson._attachments;
 

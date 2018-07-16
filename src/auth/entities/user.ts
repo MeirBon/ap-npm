@@ -2,23 +2,21 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  BaseEntity, JoinColumn, OneToMany
+  BaseEntity,
+  JoinColumn,
+  OneToMany
 } from "typeorm";
 import Token from "./token";
 
 @Entity()
 class User extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn() id: number;
 
-  @Column()
-  username: string;
+  @Column() username: string;
 
-  @Column()
-  password: string;
+  @Column() password: string;
 
-  @Column()
-  email: string;
+  @Column() email: string;
 
   @OneToMany(type => Token, token => token.user)
   @JoinColumn()
@@ -26,6 +24,4 @@ class User extends BaseEntity {
 }
 
 export default User;
-export {
-  User
-};
+export { User };

@@ -12,7 +12,7 @@ import ApiUserRoute from "../routes/api-user";
 import UserRepository from "../api/user-repository";
 
 export default function(container: Container) {
-  container.set("route-api-package", function () {
+  container.set("route-api-package", function() {
     return new ApiPackageRoute(
       new PackageRepository(container.get("storage-filesystem"))
     );
@@ -25,11 +25,18 @@ export default function(container: Container) {
   // })
 
   container.set("route-package-get-json", function() {
-    return new PackageGetJson(container.get("storage"), container.get("proxy"), container.get("config").proxyEnabled);
+    return new PackageGetJson(
+      container.get("storage"),
+      container.get("proxy"),
+      container.get("config").proxyEnabled
+    );
   });
 
   container.set("route-package-publish", function() {
-    return new PackagePublish(container.get("storage"), container.get("validator"));
+    return new PackagePublish(
+      container.get("storage"),
+      container.get("validator")
+    );
   });
 
   container.set("route-package-get", function() {
@@ -37,7 +44,11 @@ export default function(container: Container) {
   });
 
   container.set("route-package-delete", function() {
-    return new PackageDelete(container.get("storage"), container.get("validator"), container.get("config"));
+    return new PackageDelete(
+      container.get("storage"),
+      container.get("validator"),
+      container.get("config")
+    );
   });
 
   container.set("route-package-get-dist-tags", function() {
@@ -51,5 +62,4 @@ export default function(container: Container) {
   container.set("route-package-add-dist-tags", function() {
     return new PackageAddDistTags(container.get("storage"));
   });
-
 }

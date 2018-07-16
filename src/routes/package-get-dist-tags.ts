@@ -33,4 +33,3 @@ export default class PackageGetDistTags extends Route {
     }
   }
 }
-

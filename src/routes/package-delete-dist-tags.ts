@@ -22,12 +22,15 @@ export default class PackageDeleteDistTags extends Route {
       });
 
       if (typeof packageJson === "object") {
-        delete(packageJson["dist-tags"][distTag]);
+        delete packageJson["dist-tags"][distTag];
 
-        const result = await this.storage.updatePackageJson({
-          name: packageName,
-          scope: packageScope
-        }, packageJson);
+        const result = await this.storage.updatePackageJson(
+          {
+            name: packageName,
+            scope: packageScope
+          },
+          packageJson
+        );
 
         if (result === true) {
           res.status(200).send({

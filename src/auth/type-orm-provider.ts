@@ -18,12 +18,18 @@ export default class TypeOrmProvider extends AuthProvider {
     createConnection({
       ...config,
       entities: [User, Token]
-    }).then((connection) => {
-      this.connection = connection;
-    }).catch(err => console.log(err));
+    })
+      .then(connection => {
+        this.connection = connection;
+      })
+      .catch(err => console.log(err));
   }
 
-  public async userAdd(username: string, password: string, email: string): Promise<string | boolean> {
+  public async userAdd(
+    username: string,
+    password: string,
+    email: string
+  ): Promise<string | boolean> {
     const newUser = new User();
     newUser.username = username;
     newUser.password = sha512(password);
@@ -48,7 +54,11 @@ export default class TypeOrmProvider extends AuthProvider {
     return false;
   }
 
-  public async userLogin(username: string, password: string, email?: string): Promise<string | boolean> {
+  public async userLogin(
+    username: string,
+    password: string,
+    email?: string
+  ): Promise<string | boolean> {
     try {
       if (this.connection) {
         const user = await this.connection.manager.findOne(User, { username });
@@ -70,18 +80,23 @@ export default class TypeOrmProvider extends AuthProvider {
     return false;
   }
 
-  public async userRemove(username: string, password: string): Promise<boolean> {
+  public async userRemove(
+    username: string,
+    password: string
+  ): Promise<boolean> {
     if (this.connection) {
       const user = await this.connection.manager.findOne(User, {
         where: { username }
       });
       if (user) {
         if (user.password === sha512(password)) {
-          await Promise.all(user.tokens.map(async (token) => {
-            if (this.connection) {
-              await this.connection.manager.remove(token);
-            }
-          }));
+          await Promise.all(
+            user.tokens.map(async token => {
+              if (this.connection) {
+                await this.connection.manager.remove(token);
+              }
+            })
+          );
 
           await this.connection.manager.remove(user);
           return true;

@@ -4,7 +4,6 @@ import { Request } from "express";
 import { Response } from "express-serve-static-core";
 
 export default class AdminAllRoute extends Route {
-
   private storage: Filesystem;
 
   constructor(storage: Filesystem) {
@@ -20,5 +19,4 @@ export default class AdminAllRoute extends Route {
       res.send(err);
     }
   }
-
 }

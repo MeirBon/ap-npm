@@ -6,16 +6,22 @@ import getPackageJson from "./get-package-json";
 import removePackage from "./remove-package";
 import updatePackageJson from "./update-packagejson";
 
-export default async (request: IRequest, storageLocation: string): Promise<boolean> => {
-
+export default async (
+  request: IRequest,
+  storageLocation: string
+): Promise<boolean> => {
   const packageName = request.name;
   const packageScope = request.scope;
   const packageVersion = request.version;
 
-  const packageLocation = packageScope ? join(storageLocation, packageScope, packageName)
+  const packageLocation = packageScope
+    ? join(storageLocation, packageScope, packageName)
     : join(storageLocation, packageName);
 
-  const tarballLocation = join(packageLocation, packageName + packageVersion + ".tgz");
+  const tarballLocation = join(
+    packageLocation,
+    packageName + packageVersion + ".tgz"
+  );
 
   const pkgExists = await fs.exists(packageLocation);
 
@@ -27,7 +33,7 @@ export default async (request: IRequest, storageLocation: string): Promise<boole
 
   const packageJson = await getPackageJson(request, storageLocation);
   if (packageJson.hasOwnProperty("versions") && packageVersion) {
-    delete(packageJson.versions[packageVersion]);
+    delete packageJson.versions[packageVersion];
   }
 
   // If this was the last version of the package, we can remove it completely

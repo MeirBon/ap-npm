@@ -40,7 +40,11 @@ export default class Auth {
     return true;
   }
 
-  public async userLogin(username: string, password: string, email: string): Promise<string> {
+  public async userLogin(
+    username: string,
+    password: string,
+    email: string
+  ): Promise<string> {
     const token = await this.adapter.userLogin(username, password, email);
     if (typeof token === "string") {
       return token;
@@ -48,7 +52,11 @@ export default class Auth {
     throw Error("Unauthorized user");
   }
 
-  public async userAdd(username: string, password: string, email: string): Promise<string> {
+  public async userAdd(
+    username: string,
+    password: string,
+    email: string
+  ): Promise<string> {
     const token = await this.adapter.userAdd(username, password, email);
     if (typeof token === "string") {
       return token;
@@ -56,7 +64,10 @@ export default class Auth {
     throw Error("Unauthorized user");
   }
 
-  public async userRemove(username: string, password: string): Promise<boolean> {
+  public async userRemove(
+    username: string,
+    password: string
+  ): Promise<boolean> {
     return this.adapter.userRemove(username, password);
   }
 
@@ -65,14 +76,20 @@ export default class Auth {
     let allTokens;
 
     try {
-      const tokenString = await fs.readFile(user_tokens_path, { encoding: "utf8" });
+      const tokenString = await fs.readFile(user_tokens_path, {
+        encoding: "utf8"
+      });
       allTokens = JSON.parse(tokenString);
       delete allTokens[token];
     } catch (err) {
       allTokens = {};
     }
 
-    await fs.writeFile(user_tokens_path, JSON.stringify(allTokens, undefined, 2), { mode: "0777" });
+    await fs.writeFile(
+      user_tokens_path,
+      JSON.stringify(allTokens, undefined, 2),
+      { mode: "0777" }
+    );
     await this.updateTokenDB();
   }
 
@@ -91,14 +108,20 @@ export default class Auth {
       return this.adapter.verifyToken(accessToken);
     }
 
-    if (accessType === AccessType.Publish && usersSettings.canPublish === true) {
+    if (
+      accessType === AccessType.Publish &&
+      usersSettings.canPublish === true
+    ) {
       return this.adapter.verifyToken(accessToken);
     }
 
     throw new Error("Unauthorized");
   }
 
-  public async verifyLogin(username: string, password: string): Promise<string> {
+  public async verifyLogin(
+    username: string,
+    password: string
+  ): Promise<string> {
     const token = await this.adapter.userLogin(username, password);
     if (typeof token === "string") {
       return token;
@@ -115,7 +138,11 @@ export default class Auth {
 
   private async updateTokenDB(): Promise<void> {
     const tokenLocation = join(this.dbLocation, "user_tokens.json");
-    await fs.writeFile(tokenLocation, JSON.stringify(this.tokens, undefined, 2), { mode: "0777" });
+    await fs.writeFile(
+      tokenLocation,
+      JSON.stringify(this.tokens, undefined, 2),
+      { mode: "0777" }
+    );
   }
 }
 

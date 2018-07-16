@@ -27,31 +27,34 @@ export default class ConfigCommand {
 
     switch (propArgs.length) {
       case 1:
-        if (config.hasOwnProperty(propArgs[0]) && typeof config[propArgs[0]] !== "object") {
+        if (
+          config.hasOwnProperty(propArgs[0]) &&
+          typeof config[propArgs[0]] !== "object"
+        ) {
           config[propArgs[0]] = ConfigCommand.convertValue(value);
           break;
         }
         throw Error("Unknown property: " + property);
       case 2:
         if (config.hasOwnProperty(propArgs[0])) {
-          if (config[propArgs[0]]
-              .hasOwnProperty(propArgs[1]) &&
+          if (
+            config[propArgs[0]].hasOwnProperty(propArgs[1]) &&
             typeof config[propArgs[0]][propArgs[1]] !== "object"
           ) {
-            config[propArgs[0]][propArgs[1]] = ConfigCommand.convertValue(value);
+            config[propArgs[0]][propArgs[1]] = ConfigCommand.convertValue(
+              value
+            );
             break;
           }
         }
         throw Error("Unknown property: " + property);
       case 3:
         if (config.hasOwnProperty(propArgs[0])) {
-          if (config[propArgs[0]]
-            .hasOwnProperty(propArgs[1])
-          ) {
-            if (config[propArgs[0]][propArgs[1]]
-              .hasOwnProperty(propArgs[2])
-            ) {
-              config[propArgs[0]][propArgs[1]][propArgs[2]] = ConfigCommand.convertValue(value);
+          if (config[propArgs[0]].hasOwnProperty(propArgs[1])) {
+            if (config[propArgs[0]][propArgs[1]].hasOwnProperty(propArgs[2])) {
+              config[propArgs[0]][propArgs[1]][
+                propArgs[2]
+              ] = ConfigCommand.convertValue(value);
               break;
             }
           }
@@ -76,5 +79,4 @@ export default class ConfigCommand {
     }
     return value;
   }
-
 }

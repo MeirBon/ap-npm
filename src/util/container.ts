@@ -24,5 +24,4 @@ export default class Container {
 
     throw new Error(`Cannot find service: ${name}`);
   }
-
 }

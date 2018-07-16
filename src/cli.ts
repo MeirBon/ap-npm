@@ -3,20 +3,21 @@ import containerInit from "./init";
 import * as fs from "async-file";
 import * as path from "path";
 import ServeCommand from "./commands/serve";
+import * as process from "process";
 
 commander
   .command("serve")
   .alias("s")
   .description("serve ap-npm")
   .option("-c, --config", "config file to use", "")
-  .action((config) => {
+  .action((config: any) => {
     if (typeof config === "string") {
-      fs.exists(config).then((result) => {
+      fs.exists(config).then((result: boolean) => {
         if (!result) {
           throw Error(`Config file: ${config} does not exist`);
         }
 
-        fs.readFile(config).then(file => {
+        fs.readFile(config).then((file: string) => {
           const container = containerInit(JSON.parse(file));
           const logger = container.get("logger");
           logger.info("using config: " + config + "\n");
@@ -27,7 +28,7 @@ commander
       });
     } else {
       const configLocation = path.join(__dirname, "../", "config.json");
-      fs.readFile(configLocation).then((file) => {
+      fs.readFile(configLocation).then((file: string) => {
         const container = containerInit(JSON.parse(file));
         const logger = container.get("logger");
         logger.info("using default config\n");
@@ -41,9 +42,9 @@ commander
 commander
   .command("config [prop] [value]")
   .description("list or set config properties")
-  .action(function(property, value) {
+  .action((property: string, value: any) => {
     const configLocation = path.join(__dirname, "../", "config.json");
-    fs.readFile(configLocation).then(file => {
+    fs.readFile(configLocation).then((file: string) => {
       const container = containerInit(JSON.parse(file));
       const command = container.get("command-config");
 
@@ -60,7 +61,7 @@ commander
   .description("init a npm project using ap-npm publishConfig")
   .action(function() {
     const configLocation = path.join(__dirname, "../", "config.json");
-    fs.readFile(configLocation).then((file) => {
+    fs.readFile(configLocation).then((file: string) => {
       const container = containerInit(JSON.parse(file));
       const command = container.get("command-init");
       command.run(process.cwd());
@@ -72,11 +73,13 @@ commander
   .alias("v")
   .action(function() {
     const configLocation = path.join(__dirname, "../", "config.json");
-    fs.readFile(configLocation).then(file => {
+    fs.readFile(configLocation).then((file: string) => {
       const logger = containerInit(JSON.parse(file)).get("logger");
-      fs.readFile(path.join(__dirname, "../package.json")).then((file) => {
-        logger.log(JSON.parse(file).version);
-      });
+      fs.readFile(path.join(__dirname, "../package.json")).then(
+        (file: string) => {
+          logger.log(JSON.parse(file).version);
+        }
+      );
     });
   });
 

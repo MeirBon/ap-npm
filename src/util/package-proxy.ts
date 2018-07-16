@@ -22,11 +22,9 @@ export default class PackageProxy extends Route {
       }
 
       const url = this.proxyUrl + urlPath;
-      https.get(url,
-        function(response) {
-          response.pipe(res);
-        }
-      );
+      https.get(url, function(response) {
+        response.pipe(res);
+      });
     } catch (err) {
       res.status(500).send(err);
     }

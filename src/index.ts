@@ -4,9 +4,9 @@ import Container from "./util/container";
 import Init, { IConfig } from "./init";
 
 export default class ApNpmApplication {
-  private container: Container;
-  private authProvider: AuthProvider;
-  private config: IConfig;
+  private readonly container: Container;
+  private readonly authProvider: AuthProvider;
+  private readonly config: IConfig;
 
   constructor(config: IConfig, auth?: AuthProvider) {
     this.config = config;
@@ -21,10 +21,12 @@ export default class ApNpmApplication {
   }
 
   public listen(): void {
-    this.container.get("command-serve").run().then(() => 0);
+    this.container.set("auth", this.authProvider);
+    this.container
+      .get("command-serve")
+      .run()
+      .then(() => 0);
   }
 }
 
-export {
-  AuthProvider
-};
+export { AuthProvider };

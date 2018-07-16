@@ -16,7 +16,6 @@ export default class PackageGetJson extends Route {
   }
 
   public async process(req: Request, res: Response): Promise<void> {
-
     try {
       const packageJson = await this.storage.getPackageJson({
         name: req.body._packageName,

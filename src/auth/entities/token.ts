@@ -2,17 +2,17 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  BaseEntity, JoinColumn, ManyToOne
+  BaseEntity,
+  JoinColumn,
+  ManyToOne
 } from "typeorm";
 import User from "./user";
 
 @Entity()
 class Token extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn() id: number;
 
-  @Column()
-  token: string;
+  @Column() token: string;
 
   @ManyToOne(type => User, user => user.tokens)
   user: User;
@@ -20,6 +20,4 @@ class Token extends BaseEntity {
 
 export default Token;
 
-export {
-  Token
-};
+export { Token };

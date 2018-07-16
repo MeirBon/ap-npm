@@ -24,8 +24,7 @@ export default class AuthUserLogin extends Route {
         res.status(201).send({ token: result });
         return;
       }
-    } catch (err) {
-    }
+    } catch (err) {}
 
     try {
       const result = await this.createUser(userInfo);
@@ -40,11 +39,19 @@ export default class AuthUserLogin extends Route {
   }
 
   private async createUser(userInfo: IUserInfo): Promise<string | boolean> {
-    return this.auth.userAdd(userInfo.username, userInfo.password, userInfo.email);
+    return this.auth.userAdd(
+      userInfo.username,
+      userInfo.password,
+      userInfo.email
+    );
   }
 
   private async loginUser(userInfo: IUserInfo): Promise<string | boolean> {
-    return this.auth.userLogin(userInfo.username, userInfo.password, userInfo.email);
+    return this.auth.userLogin(
+      userInfo.username,
+      userInfo.password,
+      userInfo.email
+    );
   }
 }
 

@@ -2,12 +2,15 @@ import * as colors from "colors";
 import { NextFunction, Request, Response } from "express";
 
 export default class Logger {
-
-  constructor() {
-  }
+  constructor() {}
 
   public routerLogger(req: Request, res: Response, next: NextFunction) {
-    console.log("\nMETHOD:", req.method, ", URL:", decodeURIComponent(req.originalUrl));
+    console.log(
+      "\nMETHOD:",
+      req.method,
+      ", URL:",
+      decodeURIComponent(req.originalUrl)
+    );
     next();
   }
 
@@ -40,5 +43,4 @@ export default class Logger {
       console.debug(colors.blue(message));
     });
   }
-
 }

@@ -37,7 +37,7 @@ export default function Init(config: IConfig) {
 export interface IConfig {
   workDir: string;
   storage: {
-    directory: string
+    directory: string;
   };
   port: number;
   hostname: string;
@@ -50,7 +50,7 @@ export interface IConfig {
     };
     register: true;
     public: false;
-    remove: true
+    remove: true;
   };
   ssl: {
     enabled: boolean;
