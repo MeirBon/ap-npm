@@ -22,8 +22,11 @@ export default class JsonProvider extends AuthProvider {
     this.settings = config.get("auth");
     this.users = new Map();
     this.tokens = new Map<string, string>();
-    this.initUserDB();
-    this.initTokenDB().then(() => 0);
+    this.initUserDB()
+      .then(() => {
+        return this.initTokenDB();
+      })
+      .then(() => 0);
   }
 
   public async userLogin(

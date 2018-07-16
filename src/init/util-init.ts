@@ -1,7 +1,7 @@
 import * as express from "express";
 import Container from "../util/container";
 import InitRoutes from "../routes";
-import Auth from "../auth";
+import { AuthManager } from "../auth";
 import JsonProvider from "../auth/json-provider";
 import Validator from "../util/validator";
 import PackageProxy from "../util/package-proxy";
@@ -19,7 +19,7 @@ export default function(container: Container) {
   });
 
   container.set("auth", function() {
-    return new Auth(
+    return new AuthManager(
       container.get("auth-adapter"),
       container.get("config"),
       container.get("logger")

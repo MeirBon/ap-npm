@@ -3,10 +3,10 @@ import { Md5 } from "ts-md5";
 
 class Package extends RestObject {
   entityIdentifier: string = "package";
-  private name: string;
-  private scope: string | undefined;
-  private versions: string[];
-  private packageJson: object;
+  private readonly name: string;
+  private readonly scope: string | undefined;
+  private readonly versions: string[];
+  private readonly packageJson: object;
 
   constructor(
     name: string,
@@ -29,7 +29,7 @@ class Package extends RestObject {
     return this.scope;
   }
 
-  public async toObject(): Promise<object> {
+  public async toObject(): Promise<IPackageObject> {
     return {
       id: Md5.hashStr(this.scope ? this.name + "/" + this.scope : this.name),
       name: this.name,
@@ -38,6 +38,14 @@ class Package extends RestObject {
       packageJson: this.packageJson
     };
   }
+}
+
+export interface IPackageObject {
+  id: string | Int32Array;
+  name: string;
+  scope: string | undefined;
+  versions: string[];
+  packageJson: object;
 }
 
 export default Package;

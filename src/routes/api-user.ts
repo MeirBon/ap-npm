@@ -2,7 +2,7 @@ import Route from "./route";
 import { Request, Response } from "express";
 import UserRepository from "../api/user-repository";
 
-export default class ApiUserRoute extends Route {
+export default class ApiUser extends Route {
   private repository: UserRepository;
 
   constructor(repository: UserRepository) {

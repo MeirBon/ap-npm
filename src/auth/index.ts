@@ -3,7 +3,33 @@ import { join } from "path";
 import AuthProvider from "./auth-provider";
 import Logger from "../util/logger";
 
-export default class Auth {
+/**
+ * Use interface to implement AuthManager
+ * Using an interface makes it easier to test
+ */
+interface Auth {
+  storageInit(): Promise<boolean>;
+
+  userLogin(username: string, password: string, email: string): Promise<string>;
+
+  userAdd(username: string, password: string, email: string): Promise<string>;
+
+  userRemove(username: string, password: string): Promise<boolean>;
+
+  userLogout(token: string): Promise<void>;
+
+  shouldBeAbleTo(
+    accessType: AccessType,
+    packageName: string,
+    accessToken: string
+  ): Promise<boolean>;
+
+  verifyLogin(username: string, password: string): Promise<string>;
+
+  verifyToken(token: string): Promise<string>;
+}
+
+class AuthManager implements Auth {
   private readonly dbLocation: string;
   private settings: IAuthSettings;
   private adapter: AuthProvider;
@@ -25,7 +51,7 @@ export default class Auth {
     this.adapter = adapter;
   }
 
-  async storageInit(): Promise<boolean> {
+  public async storageInit(): Promise<boolean> {
     const userTokens = join(this.dbLocation, "user_tokens.json");
     const dbExists = await fs.exists(this.dbLocation);
     if (!dbExists) {
@@ -146,12 +172,12 @@ export default class Auth {
   }
 }
 
-export enum AccessType {
+enum AccessType {
   Access,
   Publish
 }
 
-export interface IAuthSettings {
+interface IAuthSettings {
   adapter: string;
   users: {
     canPublish: boolean;
@@ -161,3 +187,7 @@ export interface IAuthSettings {
   public: boolean;
   remove: boolean;
 }
+
+export default Auth;
+
+export { Auth, AccessType, IAuthSettings, AuthManager };

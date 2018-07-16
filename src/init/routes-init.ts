@@ -6,24 +6,8 @@ import PackageDelete from "../routes/package-delete";
 import PackageGetDistTags from "../routes/package-get-dist-tags";
 import PackageDeleteDistTags from "../routes/package-delete-dist-tags";
 import PackageAddDistTags from "../routes/package-add-dist-tags";
-import ApiPackageRoute from "../routes/api-package";
-import PackageRepository from "../api/package-repository";
-import ApiUserRoute from "../routes/api-user";
-import UserRepository from "../api/user-repository";
 
 export default function(container: Container) {
-  container.set("route-api-package", function() {
-    return new ApiPackageRoute(
-      new PackageRepository(container.get("storage-filesystem"))
-    );
-  });
-
-  // container.set("route-api-user", function () {
-  //   new ApiUserRoute(
-  //     new UserRepository()
-  //   )
-  // })
-
   container.set("route-package-get-json", function() {
     return new PackageGetJson(
       container.get("storage"),

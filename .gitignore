@@ -11,6 +11,8 @@ package-lock.json
 .vscode/
 npm-debug.log
 
+.nyc_output/
+
 *.crt
 *.key
 db/

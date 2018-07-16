@@ -4,7 +4,7 @@ import RoutesInit from "./init/routes-init";
 import AuthInit from "./init/auth-init";
 import CommandInit from "./init/command-init";
 import UtilInit from "./init/util-init";
-import AdminInit from "./init/admin-init";
+import ApiInit from "./init/api-init";
 import Logger from "./util/logger";
 import { Url } from "url";
 
@@ -28,8 +28,8 @@ export default function Init(config: IConfig) {
   RoutesInit(container);
   AuthInit(container);
   CommandInit(container);
+  ApiInit(container);
   UtilInit(container);
-  AdminInit(container);
 
   return container;
 }

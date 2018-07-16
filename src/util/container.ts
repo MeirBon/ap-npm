@@ -18,7 +18,11 @@ export default class Container {
     }
 
     if (this.services.has(name)) {
-      this.resolved.set(name, this.services.get(name).call());
+      let service = this.services.get(name);
+      if (typeof service === "function") {
+        service = service.call();
+      }
+      this.resolved.set(name, service);
       return this.resolved.get(name);
     }
 

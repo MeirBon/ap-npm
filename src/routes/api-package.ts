@@ -2,7 +2,7 @@ import Route from "./route";
 import { Request, Response } from "express";
 import PackageRepository from "../api/package-repository";
 
-export default class ApiPackageRoute extends Route {
+export default class ApiPackage extends Route {
   private repository: PackageRepository;
 
   constructor(repository: PackageRepository) {

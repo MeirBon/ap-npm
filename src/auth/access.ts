@@ -1,4 +1,4 @@
-import Auth, { AccessType } from "./index";
+import { Auth, AccessType } from "./index";
 import { NextFunction, Request, RequestHandler, Response } from "express";
 
 export default class Access {
@@ -12,6 +12,10 @@ export default class Access {
     return async (req: Request, res: Response, next: NextFunction) => {
       if (typeof req.headers.authorization === "string") {
         try {
+          if (!req.headers.authorization.startsWith("Bearer ")) {
+            res.status(400).send({ message: "Invalid authorization header" });
+            return;
+          }
           const shouldBeAbleTo = await this.auth.shouldBeAbleTo(
             access,
             req.params.package,
@@ -20,13 +24,11 @@ export default class Access {
 
           if (shouldBeAbleTo) {
             next();
+          } else {
+            res.status(401).send({ message: "Unauthorized" });
           }
         } catch (err) {
-          console.log(err);
-          res.status(401).send({
-            code: 401,
-            message: "Unauthorized"
-          });
+          res.status(401).send({ message: "Unauthorized" });
         }
       }
     };
