@@ -13,7 +13,7 @@ export default class User extends RestObject {
     this.user = user;
   }
 
-  public async getId(): Promise<number> {
+  public async getId(): Promise<string | number> {
     return this.user.id;
   }
 
@@ -33,14 +33,23 @@ export default class User extends RestObject {
     return tokens;
   }
 
-  public async toObject(): Promise<object> {
-    const tokens: any = {};
-
+  public async toObject(): Promise<IUserObject> {
     return {
-      id: this.getId(),
-      username: this.getUsername(),
-      email: this.getEmail(),
-      tokens: (await this.getTokens()).values()
+      id: await this.getId(),
+      username: await this.getUsername(),
+      email: await this.getEmail(),
+      tokens: await Promise.all((await this.getTokens())
+        .map(async (value) => {
+          return value.getToken();
+        })
+      )
     };
   }
+}
+
+export interface IUserObject {
+  id: string | number;
+  username: string;
+  email: string;
+  tokens: string[];
 }

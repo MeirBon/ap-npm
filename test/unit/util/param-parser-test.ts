@@ -23,13 +23,17 @@ describe("utils:param-parser", () => {
       url: "/test?a=b&b=a"
     });
     const res = httpMocks.createResponse();
+
+    let isCalled = false;
+
     const next = () => {
-      expect(true).to.equal(true);
+      isCalled = true;
     };
 
     paramParser(req, res, next);
     expect(req.params.a).to.equal("b");
     expect(req.params.b).to.equal("a");
+    expect(isCalled).true;
   });
 
   it("should parse arrays", async () => {
@@ -37,8 +41,11 @@ describe("utils:param-parser", () => {
       url: "/test?a[]=a&a[]=b&a[]=c"
     });
     const res = httpMocks.createResponse();
+
+    let isCalled = false;
+
     const next = () => {
-      expect(true).to.equal(true);
+      isCalled = true;
     };
 
     paramParser(req, res, next);
@@ -46,6 +53,8 @@ describe("utils:param-parser", () => {
     for (let i = 0; i < req.params.a.length; i++) {
       expect(req.params.a[i]).to.equal(v[i]);
     }
+
+    expect(isCalled).true;
   });
 
   it("should parse multiple arguments & arrays", async () => {
@@ -53,8 +62,11 @@ describe("utils:param-parser", () => {
       url: "/test?a[]=a&a[]=b&a[]=c&b=a&c=b"
     });
     const res = httpMocks.createResponse();
+
+    let isCalled = false;
+
     const next = () => {
-      expect(true).to.equal(true);
+      isCalled = true;
     };
 
     paramParser(req, res, next);
@@ -64,6 +76,7 @@ describe("utils:param-parser", () => {
     }
     expect(req.params.b).to.equal("a");
     expect(req.params.c).to.equal("b");
+    expect(isCalled).true;
   });
 
   it("should call next when no querystring is given", async () => {
@@ -71,10 +84,14 @@ describe("utils:param-parser", () => {
       url: "/test"
     });
     const res = httpMocks.createResponse();
+
+    let isCalled = false;
+
     const next = () => {
-      expect(true).to.equal(true);
+      isCalled = true;
     };
 
     paramParser(req, res, next);
+    expect(isCalled).true;
   });
 });

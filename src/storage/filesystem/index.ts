@@ -20,6 +20,7 @@ export default class Filesystem {
   constructor(config: Map<string, any>, logger: Logger) {
     this.config = config;
     this.logger = logger;
+
     this.storageLocation = path.join(
       this.config.get("workDir"),
       this.config.get("storage").directory

@@ -15,11 +15,25 @@ export default class Token extends RestObject {
     this.user = new User(token.user);
   }
 
-  public async toObject(): Promise<object> {
+  public async getToken(): Promise<string> {
+    return this.tkn.token;
+  }
+
+  public async getUser(): Promise<User> {
+    return this.user;
+  }
+
+  public async toObject(): Promise<ITokenObject> {
     return {
       id: this.tkn.id,
       token: this.token,
       user: await this.user.getId()
     };
   }
+}
+
+export interface ITokenObject {
+  id: string | number;
+  token: string;
+  user: string | number;
 }

@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 
 export default function(req: Request, res: Response, next: NextFunction) {
+  console.log(req.url);
+  return;
   const url = decodeURIComponent(req.url);
   const splitUrl = url.split("/");
-  let scope;
-  let packageName;
   let requestedFile;
 
   if (typeof req.body !== "object") {
@@ -33,39 +33,25 @@ export default function(req: Request, res: Response, next: NextFunction) {
     return;
   }
 
-  for (let i = 0; i < splitUrl.length; i++) {
-    if (splitUrl[i].indexOf("@") !== -1) {
-      if (scope) continue;
-      scope = splitUrl[i];
-      packageName = splitUrl[i + 1];
-    }
-  }
-
-  if (scope) {
-    for (let i = 0; i < splitUrl.length; i++) {
+  if (req.body._scope) {
+    for (let i = 3; i < splitUrl.length; i++) {
       if (splitUrl[i].indexOf("-") !== -1) {
-        if (i <= 2) continue;
-        if (requestedFile) continue;
+        if (requestedFile) break;
         requestedFile = splitUrl[i + 2];
       }
     }
   } else {
-    for (let i = 0; i < splitUrl.length; i++) {
+    for (let i = 2; i < splitUrl.length; i++) {
       if (splitUrl[i].indexOf("-") !== -1) {
-        if (i <= 1) continue;
-        if (requestedFile) continue;
+        if (requestedFile) break;
         requestedFile = splitUrl[i + 1];
       }
     }
   }
 
-  if (scope && packageName) {
-    req.body._scope = scope;
-    req.body._packageName = packageName;
-    req.body._scopedName = "/" + scope + "/" + packageName;
-  } else {
+  if (!req.body._packageName) {
     for (let i = 0; i < splitUrl.length; i++) {
-      if (req.body._packageName) continue;
+      if (req.body._packageName) break;
       if (splitUrl[i] !== "") {
         req.body._packageName = splitUrl[i];
         if (splitUrl[i + 1] === "-") {
@@ -79,11 +65,8 @@ export default function(req: Request, res: Response, next: NextFunction) {
     req.body._requestedFile = requestedFile;
   }
 
-  if (packageName) {
-    req.url = "/" + packageName;
-    if (requestedFile) {
-      req.url += "/-/" + requestedFile;
-    }
+  if (req.body._packageName && requestedFile) {
+    req.url += "/-/" + requestedFile;
   }
 
   next();

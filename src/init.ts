@@ -6,6 +6,7 @@ import CommandInit from "./init/command-init";
 import UtilInit from "./init/util-init";
 import ApiInit from "./init/api-init";
 import Logger from "./util/logger";
+import { stdout } from "process";
 import { Url } from "url";
 
 export default function Init(config: IConfig) {
@@ -21,7 +22,7 @@ export default function Init(config: IConfig) {
   });
 
   container.set("logger", function() {
-    return new Logger();
+    return new Logger(stdout);
   });
 
   StorageInit(container);

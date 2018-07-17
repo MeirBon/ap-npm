@@ -12,21 +12,15 @@ export default class Validator {
     request: IValidatorRequest,
     distTag: string
   ): Promise<boolean> {
-    const packageName = request.name;
-    const packageVersion = request.version;
-    const packageScope = request.scope;
 
-    if (!packageVersion) {
+    if (!request.version) {
       throw Error("No version given to check");
     }
 
-    const pkgJson = await this.storage.getPackageJson({
-      name: packageName,
-      scope: packageScope
-    });
+    const pkgJson = await this.storage.getPackageJson(request);
 
     return semver.satisfies(
-      packageVersion,
+      request.version,
       ">" + pkgJson["dist-tags"][distTag]
     );
   }
@@ -35,13 +29,7 @@ export default class Validator {
     request: IValidatorRequest,
     distTag: string
   ): Promise<boolean> {
-    const packageName = request.name;
-    const packageScope = request.scope;
-    const pkgJson = await this.storage.getPackageJson({
-      name: packageName,
-      scope: packageScope
-    });
-
+    const pkgJson = await this.storage.getPackageJson(request);
     return !!pkgJson["dist-tags"][distTag];
   }
 }

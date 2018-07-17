@@ -1,31 +1,30 @@
 {
-    "compilerOptions": {
-
-      "declaration": true,
-      "experimentalDecorators": true,
-      "emitDecoratorMetadata": true,
-      "module": "commonjs",
-      "moduleResolution": "node",
-      "lib": [
-        "esnext"
-      ],
-      "target": "es2015",
-      "strict": true,
-      "strictPropertyInitialization": false,
-      "outDir": "./lib",
-      "preserveConstEnums": true,
-      "removeComments": true,
-      "inlineSourceMap": true,
-      "typeRoots": [
-        "./node_modules/@types"
-      ]
-    },
-    "include": [
-      "src/**/*"
+  "compilerOptions": {
+    "declaration": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "lib": [
+      "esnext"
     ],
-    "exclude": [
-      "node_modules",
-      "**/*-spec.ts"
+    "target": "es2015",
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "outDir": "./lib",
+    "preserveConstEnums": true,
+    "removeComments": true,
+    "inlineSourceMap": true,
+    "typeRoots": [
+      "./node_modules/@types"
     ]
-  }
-  
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*-spec.ts",
+    "test"
+  ]
+}

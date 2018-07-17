@@ -13,13 +13,9 @@ export default class PackageProxy extends Route {
   public async process(req: Request, res: Response): Promise<void> {
     try {
       const pkgData = req.body;
-      let urlPath;
-
-      if (pkgData._scopedName) {
-        urlPath = pkgData._scopedName;
-      } else {
-        urlPath = "/" + pkgData._packageName;
-      }
+      const urlPath = pkgData._scope ?
+        `/${pkgData._scope}/${pkgData._packageName}` :
+        `/${pkgData._packageName}`;
 
       const url = this.proxyUrl + urlPath;
       https.get(url, function(response) {
