@@ -15,29 +15,35 @@ export default class PackagePublish extends Route {
 
   public async process(req: Request, res: Response): Promise<void> {
     const packageData = req.body;
-    const packageName = packageData._packageName;
-    const packageScope = packageData._scope;
+    const packageName = req.params.package;
+    const packageScope = req.params.scope;
 
     if (!packageData._attachments) {
-      this.deprecateUpdater(packageData).then(result => {
-        if (result) {
-          res.status(200).send({ ok: "package.json updated" });
-        } else {
-          res
-            .status(500)
-            .send({ message: "Error, cannot update package.json" });
-        }
-      });
+      const result = await this.deprecateUpdater(packageData);
+      if (result) {
+        res.status(200).send({ ok: "package.json updated" });
+      } else {
+        res
+          .status(500)
+          .send({ message: "Error, cannot update package.json" });
+      }
     }
 
     const available = await this.storage.isPackageAvailable({
       name: packageName,
       scope: packageScope
     });
-    if (available === true) {
-      await this.writePackage(req, res);
+
+    if (available) {
+      await this.writePackage(
+        { name: packageName, scope: packageScope },
+        req, res
+      );
     } else {
-      await this.writeNewPackage(req, res);
+      await this.writeNewPackage(
+        { name: packageName, scope: packageScope },
+        req, res
+      );
     }
   }
 
@@ -48,7 +54,10 @@ export default class PackagePublish extends Route {
     );
   }
 
-  private async writePackage(req: Request, res: Response): Promise<void> {
+  private async writePackage(
+    pkg: INameScope,
+    req: Request, res: Response
+  ): Promise<void> {
     let distTag = "~invalid";
     for (const key in req.body["dist-tags"]) {
       distTag = key;
@@ -59,23 +68,14 @@ export default class PackagePublish extends Route {
       return;
     }
 
-    const packageName = req.body._packageName;
-    const packageScope = req.body._scope;
     const packageData = req.body;
 
-    const hasDistTag = await this.packageValidator.hasDistTag(
-      {
-        name: packageName,
-        scope: packageScope
-      },
-      distTag
-    );
+    const hasDistTag = await this.packageValidator.hasDistTag(pkg, distTag);
 
     if (hasDistTag === true) {
       const result = await this.packageValidator.isVersionHigher(
         {
-          name: packageName,
-          scope: packageScope,
+          ...pkg,
           version: packageData["dist-tags"][distTag]
         },
         distTag
@@ -87,7 +87,7 @@ export default class PackagePublish extends Route {
         });
       } else {
         const result = await this.storage.writePackage(
-          { name: packageName, scope: packageScope },
+          pkg,
           packageData
         );
 
@@ -104,14 +104,9 @@ export default class PackagePublish extends Route {
     }
   }
 
-  private async writeNewPackage(req: Request, res: Response): Promise<void> {
-    const packageName = req.body._packageName;
-    const packageScope = req.body._scope;
+  private async writeNewPackage(pkg: INameScope, req: Request, res: Response): Promise<void> {
     const result = await this.storage.writeNewPackage(
-      {
-        name: packageName,
-        scope: packageScope
-      },
+      pkg,
       req.body
     );
 
@@ -121,4 +116,9 @@ export default class PackagePublish extends Route {
       res.status(500).send({ message: "Error while writing package" });
     }
   }
+}
+
+interface INameScope {
+  name: string;
+  scope: string;
 }

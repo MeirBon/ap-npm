@@ -8,6 +8,7 @@ import { IRequest } from "../index";
  * @return {Object} package.json
  */
 export default async (request: IRequest, storageLocation: string) => {
+  console.log(request);
   const packageName = request.name;
   const packageScope = request.scope;
 

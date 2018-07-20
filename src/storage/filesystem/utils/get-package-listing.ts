@@ -35,6 +35,9 @@ export default async function(
         }
 
         const scopedParts = await fs.readdir(path.join(storageLocation, part));
+        if (scopedParts.length === 0) {
+          storageListing.delete(part);
+        }
 
         for (let i = 0; i < scopedParts.length; i++) {
           const scopedLocation = path.join(

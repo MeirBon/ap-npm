@@ -26,11 +26,11 @@ export default function Init(config: IConfig) {
   });
 
   StorageInit(container);
-  RoutesInit(container);
   AuthInit(container);
   CommandInit(container);
   ApiInit(container);
   UtilInit(container);
+  RoutesInit(container);
 
   return container;
 }

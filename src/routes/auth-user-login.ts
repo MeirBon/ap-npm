@@ -11,6 +11,7 @@ export default class AuthUserLogin extends Route {
   }
 
   public async process(req: Request, res: Response): Promise<void> {
+    console.log(req);
     const userInfo: IUserInfo = {
       username: req.body.name,
       password: req.body.password,

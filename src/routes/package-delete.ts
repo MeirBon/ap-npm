@@ -4,6 +4,7 @@ import Filesystem from "../storage/filesystem";
 import Validator from "../util/validator";
 import { Request, Response } from "express";
 import { version } from "punycode";
+import { IncomingHttpHeaders } from "http";
 
 export default class PackageDelete extends Route {
   private storage: Filesystem;
@@ -38,27 +39,22 @@ export default class PackageDelete extends Route {
       return;
     }
 
-    const packageName = req.body._packageName;
-    const packageScope = req.body._scope;
-    let referer = req.headers.referer;
-    let packageVersion;
+    const packageName = req.params.package;
+    const packageScope = req.params.scope;
+    const headers: IncomingHttpHeaders = req.headers;
 
-    if (!referer) {
+    if (!req.headers.referer) {
       res.status(400).send({ message: "No referer given" });
       return;
     }
 
-    if (typeof referer === "object") {
-      referer = referer[0];
-    }
+    const referer: string = Array.isArray(headers.referer) ?
+      String(headers.referer![0]) :
+      String(headers.referer);
 
-    if (referer.indexOf("@") > -1) {
-      const spliced = referer.split("@");
-      packageVersion = spliced[spliced.length - 1];
-    } else {
-      const spliced = referer.split(" ");
-      packageVersion = spliced[0];
-    }
+    const packageVersion: string = referer.indexOf("@") > -1 ?
+      referer.split("@")[referer.split("@").length - 1] :
+      referer.split(" ")[0];
 
     if (packageVersion === "unpublish") {
       const result = await this.storage.removePackage({
@@ -68,10 +64,12 @@ export default class PackageDelete extends Route {
 
       if (result === true) {
         res.status(200).send({ ok: "Package deleted" });
+        return;
       } else {
         res
           .status(500)
           .send({ message: "Cannot delete package from filesystem" });
+        return;
       }
     } else if (semver.valid(packageVersion)) {
       const result = await this.storage.removePackageVersion({
@@ -82,10 +80,12 @@ export default class PackageDelete extends Route {
 
       if (result === true) {
         res.status(200).send({ ok: `Package version: ${version} deleted` });
+        return;
       } else {
         res
           .status(500)
           .send({ message: "Cannot delete package from filesystem" });
+        return;
       }
     }
   }

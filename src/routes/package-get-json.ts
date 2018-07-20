@@ -18,8 +18,8 @@ export default class PackageGetJson extends Route {
   public async process(req: Request, res: Response): Promise<void> {
     try {
       const packageJson = await this.storage.getPackageJson({
-        name: req.body._packageName,
-        scope: req.body._scope
+        name: req.params.package,
+        scope: req.params.scope
       });
 
       if (typeof packageJson === "object") {
@@ -31,7 +31,7 @@ export default class PackageGetJson extends Route {
       if (this.proxyEnabled) {
         await this.proxy.process(req, res);
       } else {
-        res.status(404).send({ message: err });
+        res.status(500).send({ message: "Internal server error" });
       }
     }
   }

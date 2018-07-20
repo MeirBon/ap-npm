@@ -11,9 +11,9 @@ export default class PackageDeleteDistTags extends Route {
   }
 
   public async process(req: Request, res: Response): Promise<void> {
-    const packageName = req.body._packageName;
-    const packageScope = req.body._scope;
-    const distTag = req.body._disttag;
+    const packageName = req.params.package;
+    const packageScope = req.params.scope;
+    const distTag = req.params.tag;
 
     try {
       const packageJson = await this.storage.getPackageJson({
@@ -38,9 +38,11 @@ export default class PackageDeleteDistTags extends Route {
           });
         } else {
           res.status(404).send({ message: "Could not get dist-tags" });
+          return;
         }
       } else {
         res.status(404).send({ message: "Could not get dist-tags" });
+        return;
       }
     } catch (err) {
       res.status(404).send({ message: err });

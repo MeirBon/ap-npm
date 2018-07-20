@@ -28,15 +28,15 @@ export default class Filesystem {
   }
 
   public async removePackage(request: IRequest) {
-    return removePackage(request, this.storageLocation);
+    return await removePackage(request, this.storageLocation);
   }
 
   public async removePackageVersion(request: IRequest) {
-    return removePackageVersion(request, this.storageLocation);
+    return await removePackageVersion(request, this.storageLocation);
   }
 
   public async writeNewPackage(request: IRequest, packageData: any) {
-    return writeNewPackage(
+    return await writeNewPackage(
       request,
       packageData,
       this.storageLocation,
@@ -45,7 +45,7 @@ export default class Filesystem {
   }
 
   public async writePackage(request: IRequest, packageData: any) {
-    return writePackage(
+    return await writePackage(
       request,
       packageData,
       this.storageLocation,
@@ -54,27 +54,27 @@ export default class Filesystem {
   }
 
   public async getPackage(request: IRequest) {
-    return getPackage(request, this.storageLocation);
+    return await getPackage(request, this.storageLocation);
   }
 
   public async getPackageJson(request: IRequest): Promise<any> {
-    return getPackageJson(request, this.storageLocation);
+    return await getPackageJson(request, this.storageLocation);
   }
 
   public async isPackageAvailable(request: IRequest) {
-    return isPackageAvailable(request, this.storageLocation);
+    return await isPackageAvailable(request, this.storageLocation);
   }
 
   public async isVersionAvailable(request: IRequest) {
-    return isVersionAvailable(request, this.storageLocation);
+    return await isVersionAvailable(request, this.storageLocation);
   }
 
   public async updatePackageJson(request: IRequest, packageJson: any) {
-    return updatePackageJson(request, packageJson, this.storageLocation);
+    return await updatePackageJson(request, packageJson, this.storageLocation);
   }
 
   public async getPackageListing() {
-    return getPackageListing(this.storageLocation);
+    return await getPackageListing(this.storageLocation);
   }
 }
 

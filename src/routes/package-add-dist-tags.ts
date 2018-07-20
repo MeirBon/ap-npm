@@ -1,6 +1,7 @@
 import Route from "./route";
 import Filesystem from "../storage/filesystem";
 import { Request, Response } from "express";
+import * as semver from "semver";
 
 export default class PackageAddDistTags extends Route {
   private storage: Filesystem;
@@ -11,10 +12,16 @@ export default class PackageAddDistTags extends Route {
   }
 
   public async process(req: Request, res: Response): Promise<void> {
-    const packageName = req.body._packageName;
-    const packageScope = req.body._scope;
-    const distTag = req.body._disttag;
-    const distTagVersion = req.body["npm-args"];
+    const packageName = req.params.package;
+    const packageScope = req.params.scope;
+    const distTag = req.params.tag;
+
+    if (typeof req.body !== "string" || !semver.valid(req.body)) {
+      res.status(400).send({ message: "Invalid version for dist tag given" });
+      return;
+    }
+
+    const distTagVersion = req.body;
 
     try {
       const packageJson = await this.storage.getPackageJson({
@@ -27,6 +34,8 @@ export default class PackageAddDistTags extends Route {
           res.send(404).send({ message: "Version does not exist" });
           return;
         }
+
+        console.log(distTagVersion);
 
         packageJson["dist-tags"][distTag] = distTagVersion;
         const result = await this.storage.updatePackageJson(

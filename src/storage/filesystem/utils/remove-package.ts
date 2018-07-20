@@ -9,7 +9,7 @@ export default async (
   const packageName = request.name;
   const packageScope = request.scope;
 
-  const packageLocation = packageScope
+  const packageLocation = packageScope !== undefined
     ? join(storageLocation, packageScope, packageName)
     : join(storageLocation, packageName);
 

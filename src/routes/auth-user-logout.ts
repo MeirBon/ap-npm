@@ -11,9 +11,16 @@ export default class AuthUserLogout extends Route {
   }
 
   public async process(req: Request, res: Response): Promise<void> {
-    if (req.headers.authorization) {
-      const token = req.headers.authorization.substr(7);
-      await this.auth.userLogout(token);
+    try {
+      if (req.headers.authorization) {
+        const token = req.headers.authorization.substr(7);
+        await this.auth.userLogout(token);
+      } else if (req.params.token) {
+        await this.auth.userLogout(req.params.token);
+      }
+    } catch (err) {
+      // don't do anything
+      // always act as if token was valid
     }
 
     res.status(200);

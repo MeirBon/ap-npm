@@ -6,6 +6,7 @@ import PackageDelete from "../routes/package-delete";
 import PackageGetDistTags from "../routes/package-get-dist-tags";
 import PackageDeleteDistTags from "../routes/package-delete-dist-tags";
 import PackageAddDistTags from "../routes/package-add-dist-tags";
+import Search from "../routes/search";
 
 export default function(container: Container) {
   container.set("route-package-get-json", function() {
@@ -45,5 +46,9 @@ export default function(container: Container) {
 
   container.set("route-package-add-dist-tags", function() {
     return new PackageAddDistTags(container.get("storage"));
+  });
+
+  container.set("route-search", function() {
+    return new Search(container.get("storage"));
   });
 }

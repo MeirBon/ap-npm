@@ -21,10 +21,10 @@ export default async (
     throw Error("Invalid attachment name");
   }
 
-  const folderPath = packageScope
+  const folderPath = packageScope !== undefined
     ? join(storageLocation, packageScope, packageName)
     : join(storageLocation, packageName);
-  const filePath = packageScope
+  const filePath = packageScope !== undefined
     ? join(folderPath, attachmentName.substr(packageScope.length + 1))
     : join(folderPath, attachmentName);
 

@@ -2,10 +2,14 @@ import { NextFunction, Request, Response } from "express";
 
 export default function(req: Request, res: Response, next: NextFunction) {
   console.log(req.url);
-  return;
+  // return;
   const url = decodeURIComponent(req.url);
-  const splitUrl = url.split("/");
+  const splitUrl = url.split("/").slice(1);
   let requestedFile;
+
+  if (req.method === "PUT") {
+    console.log(req.url);
+  }
 
   if (typeof req.body !== "object") {
     req.body = { "npm-args": req.body };
@@ -71,3 +75,13 @@ export default function(req: Request, res: Response, next: NextFunction) {
 
   next();
 }
+
+/**
+ * npm login - POST /-/v1/login/-/v1/login
+ * npm adduser - PUT /-/user/org.couchdb.user:<user>/org.couchdb.user/<user>
+ * npm publish - PUT /@scope/test-pkg/@scope%2ftest-pkg
+ * npm publish - PUT /test-pkg/test-pkg
+ * npm dist-tag ls - GET /-/package/test-pkg/dist-tags/-/package/test-pkg/dist-tags
+ * npm dist-tag ls - GET /-/package/@scope/test-pkg/dist-tags/-/package/@scope%2ftest-pkg/dist-tags
+ * npm dist-tag add <pkg>@<version> <tag> -
+ */

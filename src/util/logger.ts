@@ -9,11 +9,6 @@ export default class Logger {
     this.stream = stream;
   }
 
-  public routerLogger(req: Request, res: Response, next: NextFunction) {
-    this.write("\nMETHOD: " + req.method + ", URL: " + decodeURIComponent(req.originalUrl));
-    next();
-  }
-
   public log(...messages: any[]) {
     messages.forEach((message) => {
       this.write(message);

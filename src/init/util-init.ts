@@ -5,6 +5,8 @@ import { AuthManager } from "../auth";
 import JsonProvider from "../auth/json-provider";
 import Validator from "../util/validator";
 import PackageProxy from "../util/package-proxy";
+import Logger from "../util/logger";
+import * as Process from "process";
 
 export default function(container: Container) {
   container.set("express", function() {
@@ -37,5 +39,9 @@ export default function(container: Container) {
 
   container.set("proxy", function() {
     return new PackageProxy(container.get("config").get("proxyUrl"));
+  });
+
+  container.set("logger", function () {
+    return new Logger(Process.stdout);
   });
 }

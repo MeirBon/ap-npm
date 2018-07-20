@@ -1,4 +1,4 @@
-import { Request } from "express";
+import  { Request } from "express";
 import { Response } from "express-serve-static-core";
 
 export default abstract class Route {
