@@ -11,8 +11,9 @@ import writePackage from "./utils/write-package";
 import writeNewPackage from "./utils/write-new-package";
 import getPackageListing from "./utils/get-package-listing";
 import Logger from "../../util/logger";
+import IStorageProvider, { IRequest } from "../storage-provider";
 
-export default class Filesystem {
+export default class Filesystem implements IStorageProvider {
   private config: Map<string, any>;
   private readonly logger: Logger;
   private readonly storageLocation: string;
@@ -27,15 +28,15 @@ export default class Filesystem {
     );
   }
 
-  public async removePackage(request: IRequest) {
+  public async removePackage(request: IRequest): Promise<boolean> {
     return await removePackage(request, this.storageLocation);
   }
 
-  public async removePackageVersion(request: IRequest) {
+  public async removePackageVersion(request: IRequest): Promise<boolean> {
     return await removePackageVersion(request, this.storageLocation);
   }
 
-  public async writeNewPackage(request: IRequest, packageData: any) {
+  public async writeNewPackage(request: IRequest, packageData: any): Promise<boolean> {
     return await writeNewPackage(
       request,
       packageData,
@@ -44,7 +45,7 @@ export default class Filesystem {
     );
   }
 
-  public async writePackage(request: IRequest, packageData: any) {
+  public async writePackage(request: IRequest, packageData: any): Promise<boolean> {
     return await writePackage(
       request,
       packageData,
@@ -53,7 +54,7 @@ export default class Filesystem {
     );
   }
 
-  public async getPackage(request: IRequest) {
+  public async getPackage(request: IRequest): Promise<Buffer> {
     return await getPackage(request, this.storageLocation);
   }
 
@@ -61,26 +62,19 @@ export default class Filesystem {
     return await getPackageJson(request, this.storageLocation);
   }
 
-  public async isPackageAvailable(request: IRequest) {
+  public async isPackageAvailable(request: IRequest): Promise<boolean> {
     return await isPackageAvailable(request, this.storageLocation);
   }
 
-  public async isVersionAvailable(request: IRequest) {
+  public async isVersionAvailable(request: IRequest): Promise<boolean> {
     return await isVersionAvailable(request, this.storageLocation);
   }
 
-  public async updatePackageJson(request: IRequest, packageJson: any) {
+  public async updatePackageJson(request: IRequest, packageJson: any): Promise<boolean> {
     return await updatePackageJson(request, packageJson, this.storageLocation);
   }
 
-  public async getPackageListing() {
+  public async getPackageListing(): Promise<Map<string, any>> {
     return await getPackageListing(this.storageLocation);
   }
-}
-
-export interface IRequest {
-  name: string;
-  scope?: string;
-  version?: string;
-  file?: string;
 }

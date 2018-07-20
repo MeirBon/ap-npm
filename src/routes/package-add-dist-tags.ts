@@ -35,8 +35,6 @@ export default class PackageAddDistTags extends Route {
           return;
         }
 
-        console.log(distTagVersion);
-
         packageJson["dist-tags"][distTag] = distTagVersion;
         const result = await this.storage.updatePackageJson(
           { name: packageName, scope: packageScope },

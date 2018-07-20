@@ -1,7 +1,7 @@
 import * as fs from "async-file";
 import { join } from "path";
 import * as semver from "semver";
-import { IRequest } from "../index";
+  import { IRequest } from "../../storage-provider";
 import getPackageJson from "./get-package-json";
 import removePackage from "./remove-package";
 import updatePackageJson from "./update-packagejson";
@@ -45,11 +45,11 @@ export default async (
   if (packageJson["dist-tags"].latest === packageVersion) {
     // need to update dist-tags
     let highestVersion = "0.0.1";
-    for (const key in packageJson.versions) {
+    Object.keys(packageJson.versions).forEach((key) => {
       if (semver.satisfies(key, ">" + highestVersion)) {
         highestVersion = key;
       }
-    }
+    });
     packageJson["dist-tags"].latest = highestVersion;
   }
 

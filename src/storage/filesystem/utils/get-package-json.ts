@@ -1,6 +1,6 @@
 import * as fs from "async-file";
 import { join } from "path";
-import { IRequest } from "../index";
+  import { IRequest } from "../../storage-provider";
 
 /**
  * @param {Object} request {name: ?, scope: ?}

@@ -1,5 +1,4 @@
 import * as colors from "colors";
-import { NextFunction, Request, Response } from "express";
 import WriteStream = NodeJS.WriteStream;
 
 export default class Logger {

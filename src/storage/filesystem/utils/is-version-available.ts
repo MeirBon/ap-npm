@@ -1,6 +1,6 @@
 import { join } from "path";
 import * as fs from "async-file";
-import { IRequest } from "../index";
+  import { IRequest } from "../../storage-provider";
 
 export default async (
   request: IRequest,

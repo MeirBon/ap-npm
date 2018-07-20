@@ -1,6 +1,6 @@
 import { join } from "path";
 import * as fs from "async-file";
-import { IRequest } from "../index";
+  import { IRequest } from "../../storage-provider";
 import Logger from "../../../util/logger";
 
 export default async (
@@ -45,7 +45,9 @@ export default async (
   const newDistTags = packageData["dist-tags"];
 
   for (const key in newDistTags) {
-    distTags[key] = newDistTags[key];
+    if (newDistTags.hasOwnProperty(key)) {
+      distTags[key] = newDistTags[key];
+    }
   }
 
   packageJson["dist-tags"] = distTags;
