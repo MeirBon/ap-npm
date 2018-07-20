@@ -1,6 +1,7 @@
 import AuthProvider from "./auth/auth-provider";
 import JsonProvider from "./auth/json-provider";
 import Container from "./util/container";
+import IStorageProvider, { IRequest } from "./storage/storage-provider";
 import Init, { IConfig } from "./init";
 
 export default class ApNpmApplication {
@@ -29,4 +30,8 @@ export default class ApNpmApplication {
   }
 }
 
-export { AuthProvider };
+export {
+  AuthProvider,
+  IStorageProvider,
+  IRequest
+};
