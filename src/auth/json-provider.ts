@@ -92,12 +92,7 @@ export default class JsonProvider extends AuthProvider {
 
     try {
       const userDb = await fs.readFile(user_db_path, { encoding: "utf8" });
-
-      const obj = JSON.parse(userDb);
-      this.users = new Map();
-      Object.keys(obj).forEach(key => {
-        this.users.set(key, obj[key]);
-      });
+      this.users = await this.objToMap(JSON.parse(userDb));
     } catch (err) {
       await fs.writeFile(user_db_path, JSON.stringify({})).then(() => {
         this.users = new Map();
@@ -107,10 +102,7 @@ export default class JsonProvider extends AuthProvider {
 
   private async updateUserDB() {
     const user_db_path = join(this.dbLocation, "user_db.json");
-    const object: any = {};
-    this.users.forEach((user: IUser, key: string) => {
-      object[key] = user;
-    });
+    const object = await this.mapToObject(this.users);
 
     await fs.writeFile(user_db_path, JSON.stringify(object, undefined, 2), {
       mode: "0777"
@@ -121,7 +113,9 @@ export default class JsonProvider extends AuthProvider {
     const tokenLocation = join(this.dbLocation, "user_tokens.json");
     await fs.writeFile(
       tokenLocation,
-      JSON.stringify(this.tokens, undefined, 2),
+      JSON.stringify(
+        await this.mapToObject(this.tokens), undefined, 2
+      ),
       { mode: "0777" }
     );
   }
@@ -129,11 +123,9 @@ export default class JsonProvider extends AuthProvider {
   private async initTokenDB() {
     const user_token_path = join(this.dbLocation, "user_tokens.json");
     try {
-      const object: any = JSON.parse(await fs.readFile(user_token_path));
-      this.tokens = new Map();
-      Object.keys(object).forEach(key => {
-        this.tokens.set(key, object[key]);
-      });
+      this.tokens = await this.objToMap(
+        JSON.parse(await fs.readFile(user_token_path))
+      );
     } catch (e) {
       this.tokens = new Map<string, any>();
     }
@@ -148,6 +140,22 @@ export default class JsonProvider extends AuthProvider {
     }
 
     return false;
+  }
+
+  private async mapToObject(map: Map<string, any>): Promise<object> {
+    const object: any = {};
+    map.forEach((v: any, k: string) => {
+      object[k] = v;
+    });
+    return object;
+  }
+
+  private async objToMap(obj: any): Promise<Map<string, any>> {
+    const map = new Map();
+    await Promise.all(Object.keys(obj).map(async (k: string) => {
+      map.set(k, obj[k]);
+    }));
+    return map;
   }
 }
 

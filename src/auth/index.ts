@@ -124,7 +124,6 @@ class AuthManager implements Auth {
     packageName: string,
     accessToken: string
   ): Promise<boolean> {
-    console.log(this.settings);
     if (this.settings.public === true) {
       return true;
     }
