@@ -24,7 +24,7 @@ export default function(container: Container) {
     });
 
   container.set("storage-filesystem", function() {
-    return new Filesystem(container.get("config"), container.get("logger"));
+    return new Filesystem(container.get("config"), container.get("logger"), container.get("fs"));
   });
 
   container.set("storage", function() {

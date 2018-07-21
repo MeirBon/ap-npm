@@ -16,8 +16,6 @@ export default interface IStorageProvider {
 
   isPackageAvailable(request: IRequest): Promise<boolean>;
 
-  isVersionAvailable(request: IRequest): Promise<boolean>;
-
   updatePackageJson(request: IRequest, packageJson: any): Promise<boolean>;
 
   getPackageListing(): Promise<Map<string, any>>;

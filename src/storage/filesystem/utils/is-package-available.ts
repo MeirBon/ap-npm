@@ -1,18 +1,14 @@
 import { join } from "path";
-import * as fs from "async-file";
-  import { IRequest } from "../../storage-provider";
+import { IRequest } from "../../storage-provider";
+import IFS from "../fs-interface";
 
-export default async (request: IRequest, storageLocation: string) => {
-  try {
-    const packageName = request.name;
-    const packageScope = request.scope;
+export default async (fs: IFS, request: IRequest, storageLocation: string) => {
+  const packageName = request.name;
+  const packageScope = request.scope;
 
-    const packagePath = packageScope
-      ? join(storageLocation, packageScope, packageName, "package.json")
-      : join(storageLocation, packageName, "package.json");
+  const packagePath = packageScope
+    ? join(storageLocation, packageScope, packageName, "package.json")
+    : join(storageLocation, packageName, "package.json");
 
-    return fs.exists(packagePath);
-  } catch (err) {
-    return false;
-  }
+  return fs.exists(packagePath);
 };

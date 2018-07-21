@@ -8,7 +8,7 @@
   "proxyEnabled": false,
   "proxyUrl": "https://registry.npmjs.org",
   "auth": {
-    "adapter": "./src/auth/json-db",
+    "adapter": "default",
     "users": {
       "canPublish": true,
       "canAccess": true

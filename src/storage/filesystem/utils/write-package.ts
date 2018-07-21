@@ -1,9 +1,10 @@
 import { join } from "path";
-import * as fs from "async-file";
-  import { IRequest } from "../../storage-provider";
+import { IRequest } from "../../storage-provider";
 import Logger from "../../../util/logger";
+import IFS from "../fs-interface";
 
 export default async (
+  fs: IFS,
   request: IRequest,
   packageData: any,
   storageLocation: string,
@@ -19,7 +20,7 @@ export default async (
     ? join(storageLocation, packageScope, packageName)
     : join(storageLocation, packageName);
 
-  await fs.mkdirp(folderPath);
+  await fs.createDirectory(folderPath);
 
   let attachmentName: string = "~invalid";
   for (const key in packageData._attachments) {

@@ -1,7 +1,10 @@
-import * as fs from "async-file";
 import * as path from "path";
+import IFS from "../fs-interface";
 
-const getVersions = async function(packageLocation: string): Promise<string[]> {
+const getVersions = async function(
+  fs: IFS,
+  packageLocation: string
+): Promise<string[]> {
   const versionArray = [];
   const packageJson: any = JSON.parse(
     await fs.readFile(path.join(packageLocation, "package.json"))
@@ -21,6 +24,7 @@ const getVersions = async function(packageLocation: string): Promise<string[]> {
 };
 
 export default async function(
+  fs: IFS,
   storageLocation: string
 ): Promise<Map<string, any>> {
   const storageListing = new Map();
@@ -37,6 +41,7 @@ export default async function(
         const scopedParts = await fs.readdir(path.join(storageLocation, part));
         if (scopedParts.length === 0) {
           storageListing.delete(part);
+          return;
         }
 
         for (let i = 0; i < scopedParts.length; i++) {
@@ -45,23 +50,21 @@ export default async function(
             part,
             scopedParts[i]
           );
+
           if ((await fs.lstat(scopedLocation)).isDirectory()) {
             try {
               storageListing.get(part)[scopedParts[i]] = await getVersions(
+                fs,
                 scopedLocation
               );
-            } catch (err) {
-              // invalid pkg
-            }
+            } catch (err) {}
           }
         }
       } else {
         const location = path.join(storageLocation, part);
         try {
-          storageListing.set(part, await getVersions(location));
-        } catch (err) {
-          // invalid pkg
-        }
+          storageListing.set(part, await getVersions(fs, location));
+        } catch (err) {}
       }
     })
   );

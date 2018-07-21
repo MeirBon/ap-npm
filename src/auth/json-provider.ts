@@ -1,8 +1,10 @@
 import { sha512 } from "js-sha512";
 import { join } from "path";
-import * as fs from "async-file";
 import AuthProvider from "./auth-provider";
 import { IAuthSettings } from "./index";
+import IFS from "../storage/filesystem/fs-interface";
+import * as fs from "async-file";
+import * as crypto from "crypto";
 
 /*
  * This file serves as a way to implement an authentication server.
@@ -15,42 +17,45 @@ export default class JsonProvider extends AuthProvider {
   private settings: IAuthSettings;
   private users: Map<string, IUser>;
   private tokens: Map<string, string>;
+  private fs: IFS;
 
-  constructor(config: Map<string, any>) {
+  constructor(config: Map<string, any>, fs: IFS) {
     super();
     this.dbLocation = join(config.get("workDir"), "db");
     this.settings = config.get("auth");
     this.users = new Map();
     this.tokens = new Map<string, string>();
-    this.initUserDB()
-      .then(() => {
-        return this.initTokenDB();
-      })
-      .then(() => 0);
+    this.fs = fs;
+    this.storageInit().then(() => {
+      return this.initUserDB();
+    }).then(() => {
+      return this.initTokenDB();
+    }).then(() => {
+    });
   }
 
   public async userLogin(
     username: string,
     password: string
-  ): Promise<string | boolean> {
+  ): Promise<string> {
     const user = this.users.get(username);
     if (user && user.password === sha512(password)) {
-      const token = await this.generateToken();
+      const token = await JsonProvider.generateToken();
       this.tokens.set(token, username);
       await this.updateTokenDB();
       return token;
     }
-    return false;
+    throw Error("Error");
   }
 
   public async userAdd(
     username: string,
     password: string,
     email: string
-  ): Promise<string | boolean> {
+  ): Promise<string> {
     if (this.settings.register === true) {
       if (this.users.has(username)) {
-        return false;
+        throw Error("Forbidden");
       }
 
       this.users.set(username, {
@@ -59,14 +64,15 @@ export default class JsonProvider extends AuthProvider {
         email: email
       });
 
-      this.updateUserDB();
+      await this.updateUserDB();
 
-      const token = await this.generateToken();
+      const token = await JsonProvider.generateToken();
       this.tokens.set(token, username);
       await this.updateTokenDB();
       return token;
     }
-    return false;
+
+    throw Error("Error");
   }
 
   /*
@@ -80,23 +86,29 @@ export default class JsonProvider extends AuthProvider {
       const user = this.users.get(username);
       if (typeof user === "object" && user.password === sha512(password)) {
         this.users.delete(username);
-        this.updateUserDB();
+        await this.updateUserDB();
         return true;
       }
     }
     return false;
   }
 
+  public async userLogout(token: string): Promise<boolean> {
+    if (this.tokens.has(token)) {
+      this.tokens.delete(token);
+    }
+    return true;
+  }
+
   private async initUserDB() {
     const user_db_path = join(this.dbLocation, "user_db.json");
 
     try {
-      const userDb = await fs.readFile(user_db_path, { encoding: "utf8" });
+      const userDb = await this.fs.readFile(user_db_path, { encoding: "utf8" });
       this.users = await this.objToMap(JSON.parse(userDb));
     } catch (err) {
-      await fs.writeFile(user_db_path, JSON.stringify({})).then(() => {
-        this.users = new Map();
-      });
+      await this.fs.writeFile(user_db_path, JSON.stringify({}));
+      this.users = new Map();
     }
   }
 
@@ -104,14 +116,14 @@ export default class JsonProvider extends AuthProvider {
     const user_db_path = join(this.dbLocation, "user_db.json");
     const object = await this.mapToObject(this.users);
 
-    await fs.writeFile(user_db_path, JSON.stringify(object, undefined, 2), {
+    await this.fs.writeFile(user_db_path, JSON.stringify(object, undefined, 2), {
       mode: "0777"
     });
   }
 
   private async updateTokenDB() {
     const tokenLocation = join(this.dbLocation, "user_tokens.json");
-    await fs.writeFile(
+    await this.fs.writeFile(
       tokenLocation,
       JSON.stringify(
         await this.mapToObject(this.tokens), undefined, 2
@@ -124,22 +136,22 @@ export default class JsonProvider extends AuthProvider {
     const user_token_path = join(this.dbLocation, "user_tokens.json");
     try {
       this.tokens = await this.objToMap(
-        JSON.parse(await fs.readFile(user_token_path))
+        JSON.parse(await this.fs.readFile(user_token_path))
       );
     } catch (e) {
       this.tokens = new Map<string, any>();
     }
   }
 
-  public async verifyToken(token: string): Promise<boolean> {
+  public async verifyToken(token: string): Promise<string> {
     if (this.tokens.has(token)) {
       const tkn = this.tokens.get(token);
-      if (tkn) {
-        return this.users.has(tkn);
+      if (typeof tkn === "string") {
+        return tkn;
       }
     }
 
-    return false;
+    throw new Error("Invalid token");
   }
 
   private async mapToObject(map: Map<string, any>): Promise<object> {
@@ -156,6 +168,25 @@ export default class JsonProvider extends AuthProvider {
       map.set(k, obj[k]);
     }));
     return map;
+  }
+
+  public async storageInit(): Promise<boolean> {
+    const userTokens = join(this.dbLocation, "user_tokens.json");
+    const dbExists = await fs.exists(this.dbLocation);
+    if (!dbExists) {
+      await fs.mkdirp(this.dbLocation);
+    }
+
+    const userTokensExist = await fs.exists(userTokens);
+    if (!userTokensExist) {
+      await fs.writeFile(userTokens, JSON.stringify({}));
+    }
+
+    return true;
+  }
+
+  private static async generateToken(): Promise<string> {
+    return crypto.randomBytes(64).toString("hex");
   }
 }
 

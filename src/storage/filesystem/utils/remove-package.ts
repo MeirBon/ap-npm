@@ -1,8 +1,9 @@
-import * as fs from "async-file";
 import { join } from "path";
-  import { IRequest } from "../../storage-provider";
+import { IRequest } from "../../storage-provider";
+import IFS from "../fs-interface";
 
 export default async (
+  fs: IFS,
   request: IRequest,
   storageLocation: string
 ): Promise<boolean> => {
@@ -17,6 +18,6 @@ export default async (
     throw Error("Package does not exist");
   }
 
-  await fs.rimraf(packageLocation);
+  await fs.del(packageLocation);
   return true;
 };

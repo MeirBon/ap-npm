@@ -1,8 +1,9 @@
 import { join } from "path";
-import * as fs from "async-file";
-  import { IRequest } from "../../storage-provider";
+import { IRequest } from "../../storage-provider";
+import IFS from "../fs-interface";
 
 export default async function(
+  fs: IFS,
   request: IRequest,
   storageLocation: string
 ): Promise<Buffer> {
@@ -15,7 +16,7 @@ export default async function(
       ? join(storageLocation, packageScope, packageName, fileName)
       : join(storageLocation, packageName, fileName);
 
-    return fs.readFile(fileLocation);
+    return await fs.readFile(fileLocation);
   } else {
     throw Error("No filename given");
   }

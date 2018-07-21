@@ -1,31 +1,71 @@
-import * as fs from "async-file";
 import { join } from "path";
 import AuthProvider from "./auth-provider";
-import Logger from "../util/logger";
 
 /**
  * Use interface to implement AuthManager
  * Using an interface makes it easier to test
  */
 interface Auth {
-  storageInit(): Promise<boolean>;
-
+  /**
+   * return token for user
+   * @param {string} username
+   * @param {string} password
+   * @param {string} email
+   * @returns {Promise<string>}
+   */
   userLogin(username: string, password: string, email: string): Promise<string>;
 
+  /**
+   * add user
+   * @param {string} username
+   * @param {string} password
+   * @param {string} email
+   * @returns {Promise<string>}
+   */
   userAdd(username: string, password: string, email: string): Promise<string>;
 
+  /**
+   * remove user
+   * @param {string} username
+   * @param {string} password
+   * @returns {Promise<boolean>}
+   */
   userRemove(username: string, password: string): Promise<boolean>;
 
+  /**
+   * invalidate token
+   * @param {string} token
+   * @returns {Promise<void>}
+   */
   userLogout(token: string): Promise<void>;
 
+  /**
+   * returns whether given accessToken has access
+   * @param {AccessType} accessType
+   * @param {string} packageName
+   * @param {string} accessToken
+   * @returns {Promise<boolean>}
+   */
   shouldBeAbleTo(
     accessType: AccessType,
     packageName: string,
     accessToken: string
   ): Promise<boolean>;
 
+  /**
+   * returns token for user if successful
+   * differs from userLogin in that it does not require email
+   * @param {string} username
+   * @param {string} password
+   * @returns {Promise<string>}
+   */
   verifyLogin(username: string, password: string): Promise<string>;
 
+  /**
+   * returns string of username
+   * @param {string} token
+   * @returns {Promise<string>}
+   */
   verifyToken(token: string): Promise<string>;
 }
 
@@ -35,35 +75,11 @@ class AuthManager implements Auth {
   private adapter: AuthProvider;
   private readonly tokens: Map<string, any>;
 
-  constructor(adapter: AuthProvider, config: Map<string, any>, logger: Logger) {
+  constructor(adapter: AuthProvider, config: Map<string, any>) {
     this.dbLocation = join(config.get("workDir"), "db");
     this.tokens = new Map<string, any>();
     this.settings = config.get("auth");
     this.adapter = adapter;
-
-    try {
-      this.storageInit().then(() => 0);
-    } catch (err) {
-      logger.error("Failed to initialize auth-structure in " + this.dbLocation);
-    }
-
-    this.settings = config.get("auth");
-    this.adapter = adapter;
-  }
-
-  public async storageInit(): Promise<boolean> {
-    const userTokens = join(this.dbLocation, "user_tokens.json");
-    const dbExists = await fs.exists(this.dbLocation);
-    if (!dbExists) {
-      await fs.mkdirp(this.dbLocation);
-    }
-
-    const userTokensExist = await fs.exists(userTokens);
-    if (!userTokensExist) {
-      await fs.writeFile(userTokens, JSON.stringify({}));
-    }
-
-    return true;
   }
 
   public async userLogin(
@@ -71,11 +87,10 @@ class AuthManager implements Auth {
     password: string,
     email: string
   ): Promise<string> {
-    const token = await this.adapter.userLogin(username, password, email);
-    if (typeof token === "string") {
-      return token;
-    }
-    throw Error("Unauthorized user");
+    try {
+      return await this.adapter.userLogin(username, password, email);
+    } catch (err) {}
+    throw Error("Unauthorized");
   }
 
   public async userAdd(
@@ -83,40 +98,29 @@ class AuthManager implements Auth {
     password: string,
     email: string
   ): Promise<string> {
-    const token = await this.adapter.userAdd(username, password, email);
-    if (typeof token === "string") {
-      return token;
-    }
-    throw Error("Unauthorized user");
+    try {
+      return await this.adapter.userAdd(username, password, email);
+    } catch (err) {}
+    throw Error("Unauthorized");
   }
 
   public async userRemove(
     username: string,
     password: string
   ): Promise<boolean> {
-    return this.adapter.userRemove(username, password);
+    if (this.settings.remove === false) {
+      return false;
+    }
+
+    try {
+      return await this.adapter.userRemove(username, password);
+    } catch (err) {
+      return false;
+    }
   }
 
   public async userLogout(token: string): Promise<void> {
-    const user_tokens_path = join(this.dbLocation, "user_tokens.json");
-    let allTokens;
-
-    try {
-      const tokenString = await fs.readFile(user_tokens_path, {
-        encoding: "utf8"
-      });
-      allTokens = JSON.parse(tokenString);
-      delete allTokens[token];
-    } catch (err) {
-      allTokens = {};
-    }
-
-    await fs.writeFile(
-      user_tokens_path,
-      JSON.stringify(allTokens, undefined, 2),
-      { mode: "0777" }
-    );
-    await this.updateTokenDB();
+    await this.adapter.userLogout(token);
   }
 
   public async shouldBeAbleTo(
@@ -131,14 +135,26 @@ class AuthManager implements Auth {
     accessToken = accessToken.substr(7);
     const usersSettings = this.settings.users;
     if (accessType === AccessType.Access && usersSettings.canAccess === true) {
-      return this.adapter.verifyToken(accessToken);
+      try {
+        return (
+          typeof (await this.adapter.verifyToken(accessToken)) === "string"
+        );
+      } catch (err) {
+        return false;
+      }
     }
 
     if (
       accessType === AccessType.Publish &&
       usersSettings.canPublish === true
     ) {
-      return this.adapter.verifyToken(accessToken);
+      try {
+        return (
+          typeof (await this.adapter.verifyToken(accessToken)) === "string"
+        );
+      } catch (err) {
+        return false;
+      }
     }
 
     throw new Error("Unauthorized");
@@ -148,27 +164,17 @@ class AuthManager implements Auth {
     username: string,
     password: string
   ): Promise<string> {
-    const token = await this.adapter.userLogin(username, password);
-    if (typeof token === "string") {
-      return token;
-    }
-    throw Error("Unauthorized user");
+    try {
+      return await this.adapter.userLogin(username, password);
+    } catch (err) {}
+    throw Error("Unauthorized");
   }
 
   public async verifyToken(token: string): Promise<string> {
-    if (this.tokens.has(token)) {
-      return this.tokens.get(token);
-    }
-    throw Error("Invalid token");
-  }
-
-  private async updateTokenDB(): Promise<void> {
-    const tokenLocation = join(this.dbLocation, "user_tokens.json");
-    await fs.writeFile(
-      tokenLocation,
-      JSON.stringify(this.tokens, undefined, 2),
-      { mode: "0777" }
-    );
+    try {
+      return await this.adapter.verifyToken(token);
+    } catch (err) {}
+    throw Error("Unauthorized");
   }
 }
 

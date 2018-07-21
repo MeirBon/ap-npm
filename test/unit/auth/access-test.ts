@@ -11,25 +11,30 @@ describe("auth:access", () => {
   it("should call next on success", async () => {
     const type = AccessType.Access;
     const authMock = TypeMoq.Mock.ofType<Auth>();
-    authMock.setup(x => x.shouldBeAbleTo(type, "test", "test")).returns(
-      async (): Promise<boolean> => {
-        expect(type).to.equal(AccessType.Access);
-        return true;
-      }
-    );
+    authMock
+      .setup(x => x.shouldBeAbleTo(type, "test", "Bearer test"))
+      .returns(async () => true);
 
-    const next: NextFunction = () => expect(true);
+    let called = false;
+
+    const next: NextFunction = () => {
+      called = true;
+    };
 
     const access = new Access(authMock.object);
 
     const req = httpMocks.createRequest({
       headers: {
         authorization: "Bearer test"
+      },
+      params: {
+        "package": "test"
       }
     });
 
     const res = httpMocks.createResponse();
     await access.can(type)(req, res, next);
+    expect(called).true;
   });
 
   it("should return 400 on invalid header", async () => {
@@ -100,7 +105,7 @@ describe("auth:access", () => {
     authMock.setup(x => x.shouldBeAbleTo(type, "test", "test")).returns(
       async (): Promise<boolean> => {
         expect(type).to.equal(AccessType.Access);
-        throw "";
+        throw Error();
       }
     );
 
@@ -123,5 +128,47 @@ describe("auth:access", () => {
     const res = httpMocks.createResponse();
     await access.can(type)(req, res, next);
     expect(res.statusCode).to.equal(401);
+  });
+
+  it("should return true when public", async () => {
+    const authMock = TypeMoq.Mock.ofType<Auth>();
+    const req = httpMocks.createRequest();
+    const res = httpMocks.createResponse();
+    const access = new Access(authMock.object, true);
+    let called = false;
+    const next: NextFunction = () => expect((called = true));
+    await access.can(AccessType.Access)(req, res, next);
+    expect(called).true;
+    called = false;
+    await access.can(AccessType.Publish)(req, res, next);
+    expect(called).true;
+  });
+
+  it("should return 400 when authorization header is not present", async () => {
+    const type = AccessType.Access;
+    const authMock = TypeMoq.Mock.ofType<Auth>();
+    let called = false;
+    const next: NextFunction = () => {
+      called = true;
+    };
+
+    const access = new Access(authMock.object);
+
+    const req = httpMocks.createRequest({
+      headers: {
+        authorization: undefined
+      },
+      send: function(body: any) {
+        expect(body).to.equal({
+          message: "Unauthorized"
+        });
+        return this;
+      }
+    });
+
+    const res = httpMocks.createResponse();
+    await access.can(type)(req, res, next);
+    expect(res.statusCode).to.equal(401);
+    expect(called).false;
   });
 });

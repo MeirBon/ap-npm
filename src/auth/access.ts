@@ -3,7 +3,7 @@ import { NextFunction, Request, RequestHandler, Response } from "express";
 
 export default class Access {
   private auth: Auth;
-  private isPublic: boolean;
+  private readonly isPublic: boolean;
 
   constructor(auth: Auth, isPublic: boolean = false) {
     this.auth = auth;
@@ -13,8 +13,7 @@ export default class Access {
   public can(access: AccessType): RequestHandler {
     return async (req: Request, res: Response, next: NextFunction) => {
       if (this.isPublic) {
-        next();
-        return;
+        return next();
       }
 
       if (typeof req.headers.authorization === "string") {
@@ -29,16 +28,15 @@ export default class Access {
             req.headers.authorization
           );
 
+          console.log(shouldBeAbleTo);
+
           if (shouldBeAbleTo) {
-            next();
-            return;
+            return next();
           } else {
             res.status(401).send({ message: "Unauthorized" });
             return;
           }
         } catch (err) {
-          res.status(401).send({ message: "Unauthorized" });
-          return;
         }
       }
       res.status(401).send({ message: "Unauthorized" });

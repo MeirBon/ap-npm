@@ -14,7 +14,8 @@ describe("utils:validator", () => {
       ["workDir", "/"],
       ["storage", { directory: "" }]
     ]);
-    const storage = TypeMoq.Mock.ofType<Filesystem>(Filesystem,
+    const storage = TypeMoq.Mock.ofType<Filesystem>(
+      Filesystem,
       undefined,
       undefined,
       config
@@ -29,10 +30,15 @@ describe("utils:validator", () => {
 
     const validator = new Validator(storage.object);
 
-    expect(await validator.isVersionHigher({
-      name: request.name,
-      version: "1.0.0"
-    }, "latest")).true;
+    expect(
+      await validator.isVersionHigher(
+        {
+          name: request.name,
+          version: "1.0.0"
+        },
+        "latest"
+      )
+    ).true;
   });
 
   it("should return false on invalid higher version", async () => {
@@ -47,7 +53,12 @@ describe("utils:validator", () => {
       ["storage", { directory: "" }]
     ]);
 
-    const storage = TypeMoq.Mock.ofType<Filesystem>(Filesystem, undefined, undefined, config);
+    const storage = TypeMoq.Mock.ofType<Filesystem>(
+      Filesystem,
+      undefined,
+      undefined,
+      config
+    );
     storage.setup(x => x.getPackageJson(request)).returns(async () => {
       return {
         "dist-tags": {
@@ -71,7 +82,12 @@ describe("utils:validator", () => {
       ["storage", { directory: "" }]
     ]);
 
-    const storage = TypeMoq.Mock.ofType<Filesystem>(Filesystem, undefined, undefined, config);
+    const storage = TypeMoq.Mock.ofType<Filesystem>(
+      Filesystem,
+      undefined,
+      undefined,
+      config
+    );
 
     const validator = new Validator(storage.object);
 
@@ -93,7 +109,12 @@ describe("utils:validator", () => {
       ["storage", { directory: "" }]
     ]);
 
-    const storage = TypeMoq.Mock.ofType<Filesystem>(Filesystem, undefined, undefined, config);
+    const storage = TypeMoq.Mock.ofType<Filesystem>(
+      Filesystem,
+      undefined,
+      undefined,
+      config
+    );
     storage.setup(x => x.getPackageJson(request)).returns(async () => {
       return {
         "dist-tags": {

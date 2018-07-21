@@ -1,5 +1,3 @@
-import * as crypto from "crypto";
-
 export default abstract class AuthProvider {
   /**
    * Retrieves token for user
@@ -12,7 +10,7 @@ export default abstract class AuthProvider {
     username: string,
     password: string,
     email?: string
-  ): Promise<string | boolean>;
+  ): Promise<string>;
 
   /**
    * Adds user to db and returns a token as string
@@ -25,7 +23,7 @@ export default abstract class AuthProvider {
     username: string,
     password: string,
     email: string
-  ): Promise<string | boolean>;
+  ): Promise<string>;
 
   /**
    * Removes user from db
@@ -39,13 +37,16 @@ export default abstract class AuthProvider {
   ): Promise<boolean>;
 
   /**
-   * Verifies whether token is a valid user
+   * Invalidates token
+   * @param {string} token
+   * @returns {Promise<boolean>}
+   */
+  public abstract async userLogout(token: string): Promise<boolean>;
+
+  /**
+   * Returns username for token
    * @param {Token} token
    * @returns {Promise<boolean>}
    */
-  public abstract async verifyToken(token: string): Promise<boolean>;
-
-  protected async generateToken(): Promise<string> {
-    return crypto.randomBytes(64).toString("hex");
-  }
+  public abstract async verifyToken(token: string): Promise<string>;
 }

@@ -1,9 +1,10 @@
 import { join } from "path";
-import * as fs from "async-file";
-  import { IRequest } from "../../storage-provider";
+import { IRequest } from "../../storage-provider";
 import Logger from "../../../util/logger";
+import IFS from "../fs-interface";
 
 export default async (
+  fs: IFS,
   request: IRequest,
   packageData: any,
   storageLocation: string,
@@ -28,7 +29,7 @@ export default async (
     ? join(folderPath, attachmentName.substr(packageScope.length + 1))
     : join(folderPath, attachmentName);
 
-  await fs.mkdirp(folderPath);
+  await fs.createDirectory(folderPath);
 
   const packageJsonPath = join(folderPath, "package.json");
 
