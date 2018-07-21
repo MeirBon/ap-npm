@@ -11,7 +11,7 @@
     "serve-ts": "ts-node src/cli.ts serve",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
     "test": "mocha -r ts-node/register test/**/*.ts",
-    "test-coverage": "nyc --extension .ts mocha -r ts-node/register test/**/*.ts"
+    "test-coverage": "nyc --reporter=json --extension .ts mocha -r ts-node/register test/**/*.ts"
   },
   "bin": {
     "ap-npm": "./bin/ap-npm"
