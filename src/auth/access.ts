@@ -28,8 +28,6 @@ export default class Access {
             req.headers.authorization
           );
 
-          console.log(shouldBeAbleTo);
-
           if (shouldBeAbleTo) {
             return next();
           } else {
