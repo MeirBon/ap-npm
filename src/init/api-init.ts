@@ -5,7 +5,7 @@ import ApiAuthenticate from "../routes/api-authenticate";
 
 export default function(container: Container) {
   container.set("package-repository", () => {
-    return new PackageRepository(container.get("storage-filesystem"));
+    return new PackageRepository(container.get("storage"));
   });
 
   container.set("route-api-package", () => {

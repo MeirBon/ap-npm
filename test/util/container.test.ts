@@ -30,4 +30,10 @@ describe("utils:container", () => {
       expect(err.message).to.equal("Cannot find service: a");
     }
   });
+
+  it("should correctly return whether container has service", async () => {
+    const container = new Container();
+    container.set("a", "b");
+    expect(container.has("a")).true;
+  });
 });

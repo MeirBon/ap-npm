@@ -11,7 +11,7 @@ describe("routes:auth-user-login", () => {
   it("should login a user", async () => {
     const authMock = TypeMoq.Mock.ofType<Auth>();
     authMock
-      .setup(x => x.userLogin("test", "test", "test"))
+      .setup(x => x.userLogin("test", "test"))
       .returns(async () => {
         return "test";
       });
@@ -19,9 +19,8 @@ describe("routes:auth-user-login", () => {
 
     const req = httpMocks.createRequest({
       body: {
-        username: "test",
-        password: "test",
-        email: "test"
+        name: "test",
+        password: "test"
       },
       send: function(body: any) {
         expect(body).to.equal({

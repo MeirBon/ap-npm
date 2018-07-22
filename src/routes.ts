@@ -18,7 +18,6 @@ import AuthWhoami from "./routes/auth-whoami";
 import AuthUserLogout from "./routes/auth-user-logout";
 import AuthUserLogin from "./routes/auth-user-login";
 import Search from "./routes/search";
-import PackageProxy from "./routes/package-proxy";
 import AuditProxy from "./routes/audit-proxy";
 
 export default function InitRoutes(app: Application, container: Container) {

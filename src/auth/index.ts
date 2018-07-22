@@ -13,7 +13,7 @@ interface Auth {
    * @param {string} email
    * @returns {Promise<string>}
    */
-  userLogin(username: string, password: string, email: string): Promise<string>;
+  userLogin(username: string, password: string, email?: string): Promise<string>;
 
   /**
    * add user
@@ -22,7 +22,7 @@ interface Auth {
    * @param {string} email
    * @returns {Promise<string>}
    */
-  userAdd(username: string, password: string, email: string): Promise<string>;
+  userAdd(username: string, password: string, email?: string): Promise<string>;
 
   /**
    * remove user
@@ -85,7 +85,7 @@ class AuthManager implements Auth {
   public async userLogin(
     username: string,
     password: string,
-    email: string
+    email?: string
   ): Promise<string> {
     try {
       return await this.adapter.userLogin(username, password, email);
@@ -96,10 +96,10 @@ class AuthManager implements Auth {
   public async userAdd(
     username: string,
     password: string,
-    email: string
+    email?: string
   ): Promise<string> {
     try {
-      return await this.adapter.userAdd(username, password, email);
+      return await this.adapter.userAdd(username, password, email ? email : "");
     } catch (err) {}
     throw Error("Unauthorized");
   }

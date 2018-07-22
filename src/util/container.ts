@@ -11,6 +11,10 @@ export default class Container {
     this.services.set(name, service);
   }
 
+  public has(name: string): boolean {
+    return this.services.has(name);
+  }
+
   public get(name: string): any {
     const resolved = this.resolved.get(name);
     if (resolved) {

@@ -1,10 +1,10 @@
-import Filesystem from "../storage/filesystem";
 import Package from "./entities/package";
+import IStorageProvider from "../storage/storage-provider";
 
 class PackageRepository {
-  private storage: Filesystem;
+  private storage: IStorageProvider;
 
-  public constructor(storage: Filesystem) {
+  public constructor(storage: IStorageProvider) {
     this.storage = storage;
   }
 
