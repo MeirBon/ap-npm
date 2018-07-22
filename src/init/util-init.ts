@@ -4,8 +4,9 @@ import InitRoutes from "../routes";
 import { AuthManager } from "../auth";
 import JsonProvider from "../auth/json-provider";
 import Validator from "../util/validator";
-import PackageProxy from "../util/package-proxy";
+import PackageProxy from "../routes/package-proxy";
 import Logger from "../util/logger";
+import * as axios from "@contentful/axios";
 import * as Process from "process";
 import * as fs from "async-file";
 
@@ -41,8 +42,8 @@ export default function(container: Container) {
     return new AuthAdapter(container.get("config"));
   });
 
-  container.set("proxy", function() {
-    return new PackageProxy(container.get("config").get("proxyUrl"));
+  container.set("axios", function() {
+    return axios;
   });
 
   container.set("logger", function () {

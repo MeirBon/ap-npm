@@ -18,6 +18,8 @@ import AuthWhoami from "./routes/auth-whoami";
 import AuthUserLogout from "./routes/auth-user-logout";
 import AuthUserLogin from "./routes/auth-user-login";
 import Search from "./routes/search";
+import PackageProxy from "./routes/package-proxy";
+import AuditProxy from "./routes/audit-proxy";
 
 export default function InitRoutes(app: Application, container: Container) {
   const config: Map<string, any> = container.get("config");
@@ -68,6 +70,10 @@ export default function InitRoutes(app: Application, container: Container) {
   });
 
   // *** AUTH ***
+  app.post("/-/v1/login", (req: Request, res: Response) => {
+    const route: AuthUserLogin = container.get("route-auth-user-login");
+    return route.process(req, res);
+  });
   app.put("/-/user/org.couchdb.user:_rev?/:revision?", (req: Request, res: Response) => {
     const route: AuthUserLogin = container.get("route-auth-user-login");
     return route.process(req, res);
@@ -195,6 +201,16 @@ export default function InitRoutes(app: Application, container: Container) {
       return route.process(req, res);
     }
   );
+
+  app.post("/-/npm/v1/security/audits", (req: Request, res: Response) => {
+    const route: AuditProxy = container.get("route-audit-proxy");
+    return route.process(req, res);
+  });
+
+  app.post("/-/npm/v1/security/audits/quick", (req: Request, res: Response) => {
+    const route: AuditProxy = container.get("route-audit-proxy");
+    return route.process(req, res);
+  });
 
   app.get("/", (req: Request, res: Response) => {
     if (req.url === "/" || req.url === "") {

@@ -1,8 +1,8 @@
 import "mocha";
 import * as TypeMoq from "typemoq";
 import { expect } from "chai";
-import isPackageAvailable from "../../../src/storage/filesystem/utils/is-package-available";
-import IFS from "../../../src/storage/filesystem/fs-interface";
+import isPackageAvailable from "../../src/storage/filesystem/utils/is-package-available";
+import IFS from "../../src/storage/filesystem/fs-interface";
 
 describe("storage:filesystem:utils:is-package-available", () => {
   it("should return true when package is available", async () => {

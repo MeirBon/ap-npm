@@ -1,8 +1,8 @@
 import "mocha";
 import * as TypeMoq from "typemoq";
 import { expect } from "chai";
-import getPackageListing from "../../../src/storage/filesystem/utils/get-package-listing";
-import IFS from "../../../src/storage/filesystem/fs-interface";
+import getPackageListing from "../../src/storage/filesystem/utils/get-package-listing";
+import IFS from "../../src/storage/filesystem/fs-interface";
 import { join } from "path";
 
 describe("storage:filesystem:utils:get-package-listing", () => {

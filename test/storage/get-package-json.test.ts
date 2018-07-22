@@ -1,8 +1,8 @@
 import "mocha";
 import * as TypeMoq from "typemoq";
 import { expect } from "chai";
-import getPackageJson from "../../../src/storage/filesystem/utils/get-package-json";
-import IFS from "../../../src/storage/filesystem/fs-interface";
+import getPackageJson from "../../src/storage/filesystem/utils/get-package-json";
+import IFS from "../../src/storage/filesystem/fs-interface";
 
 describe("storage:filesystem:utils:get-package-json", () => {
   it("should throw when package.json does not exist", async () => {

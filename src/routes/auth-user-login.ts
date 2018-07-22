@@ -33,9 +33,9 @@ export default class AuthUserLogin extends Route {
       } else {
         res.status(401).send({ error: "Cannot create user" });
       }
-    } catch (err) {
-      res.status(401).send({ error: "Cannot create user" });
-    }
+    } catch (err) {}
+
+    res.status(401).send({ error: "Cannot create user" });
   }
 
   private async createUser(userInfo: IUserInfo): Promise<string | boolean> {

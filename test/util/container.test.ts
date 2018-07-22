@@ -1,6 +1,6 @@
 import "mocha";
 import { expect } from "chai";
-import Container from "../../../src/util/container";
+import Container from "../../src/util/container";
 
 describe("utils:container", () => {
   it("should set and get a variable", async () => {

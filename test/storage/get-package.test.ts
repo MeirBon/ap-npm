@@ -1,8 +1,8 @@
 import "mocha";
 import * as TypeMoq from "typemoq";
 import { expect } from "chai";
-import packageGet from "../../../src/storage/filesystem/utils/get-package";
-import IFS from "../../../src/storage/filesystem/fs-interface";
+import packageGet from "../../src/storage/filesystem/utils/get-package";
+import IFS from "../../src/storage/filesystem/fs-interface";
 
 describe("storage:filesystem:utils:get-package", () => {
   it("should throw when no file was given", async () => {

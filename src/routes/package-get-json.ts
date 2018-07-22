@@ -1,6 +1,6 @@
 import Route from "./route";
 import Filesystem from "../storage/filesystem";
-import PackageProxy from "../util/package-proxy";
+import PackageProxy from "./package-proxy";
 import { Request, Response } from "express";
 
 export default class PackageGetJson extends Route {

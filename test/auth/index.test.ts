@@ -1,8 +1,8 @@
 import "mocha";
 import { expect } from "chai";
 import * as TypeMoq from "typemoq";
-import { AccessType, AuthManager } from "../../../src/auth";
-import AuthProvider from "../../../src/auth/auth-provider";
+import { AccessType, AuthManager } from "../../src/auth";
+import AuthProvider from "../../src/auth/auth-provider";
 
 describe("auth:auth-manager", () => {
   it("should login user", async () => {

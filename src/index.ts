@@ -17,7 +17,7 @@ export default class ApNpmApplication {
     } else {
       const map = new Map();
       map.set("workDir", config.workDir);
-      this.authProvider = new JsonProvider(map);
+      this.authProvider = new JsonProvider(map, this.container.get("fs"));
     }
   }
 

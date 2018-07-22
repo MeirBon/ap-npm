@@ -1,8 +1,8 @@
 import "mocha";
 import * as TypeMoq from "typemoq";
 import { expect } from "chai";
-import updatePackageJson from "../../../src/storage/filesystem/utils/update-packagejson";
-import IFS from "../../../src/storage/filesystem/fs-interface";
+import updatePackageJson from "../../src/storage/filesystem/utils/update-packagejson";
+import IFS from "../../src/storage/filesystem/fs-interface";
 
 describe("storage:filesystem:utils:update-package-json", () => {
   it("should return false when fs throws", async () => {

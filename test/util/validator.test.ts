@@ -1,8 +1,8 @@
 import "mocha";
 import { expect } from "chai";
-import Validator from "../../../src/util/validator";
+import Validator from "../../src/util/validator";
 import * as TypeMoq from "typemoq";
-import Filesystem from "../../../src/storage/filesystem";
+import Filesystem from "../../src/storage/filesystem";
 
 describe("utils:validator", () => {
   it("should return true on valid higher version", async () => {

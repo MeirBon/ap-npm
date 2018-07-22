@@ -1,10 +1,10 @@
 import "mocha";
 import { expect } from "chai";
 import * as TypeMoq from "typemoq";
-import ApiAuthenticate from "../../../src/routes/api-authenticate";
-import { Auth } from "../../../src/auth";
+import ApiAuthenticate from "../../src/routes/api-authenticate";
+import { Auth } from "../../src/auth";
 
-const httpMocks = require("node-mocks-http");
+import * as httpMocks from "node-mocks-http";
 
 describe("routes:api-authenticate", () => {
   it("should return status 200 with body", async () => {

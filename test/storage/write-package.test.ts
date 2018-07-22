@@ -1,10 +1,10 @@
 import "mocha";
 import * as TypeMoq from "typemoq";
 import { expect } from "chai";
-import writePackage from "../../../src/storage/filesystem/utils/write-package";
-import IFS from "../../../src/storage/filesystem/fs-interface";
+import writePackage from "../../src/storage/filesystem/utils/write-package";
+import IFS from "../../src/storage/filesystem/fs-interface";
 import WriteStream = NodeJS.WriteStream;
-import Logger from "../../../src/util/logger";
+import Logger from "../../src/util/logger";
 
 describe("storage:filesystem:utils:write-package", () => {
   it("should return false when fs throws", async () => {

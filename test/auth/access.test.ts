@@ -1,8 +1,8 @@
 import "mocha";
 import { expect } from "chai";
 import * as TypeMoq from "typemoq";
-import { AccessType, Auth } from "../../../src/auth";
-import Access from "../../../src/auth/access";
+import { AccessType, Auth } from "../../src/auth";
+import Access from "../../src/auth/access";
 import { NextFunction } from "express";
 
 const httpMocks = require("node-mocks-http");

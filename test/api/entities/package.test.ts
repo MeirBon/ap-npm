@@ -1,6 +1,6 @@
 import "mocha";
 import { expect } from "chai";
-import Package from "../../../../src/api/entities/package";
+import Package from "../../../src/api/entities/package";
 import { Md5 } from "ts-md5";
 
 describe("api:entities:package", () => {

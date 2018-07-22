@@ -1,9 +1,9 @@
 import "mocha";
 import * as TypeMoq from "typemoq";
 import { expect } from "chai";
-import removePackageVersion from "../../../src/storage/filesystem/utils/remove-package-version";
-import IFS from "../../../src/storage/filesystem/fs-interface";
-import { IRequest } from "../../../src";
+import removePackageVersion from "../../src/storage/filesystem/utils/remove-package-version";
+import IFS from "../../src/storage/filesystem/fs-interface";
+import { IRequest } from "../../src";
 
 describe("storage:filesystem:utils:get-package", () => {
   it("should throw when version does not exist", async () => {

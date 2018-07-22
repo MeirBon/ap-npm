@@ -7,13 +7,15 @@ import PackageGetDistTags from "../routes/package-get-dist-tags";
 import PackageDeleteDistTags from "../routes/package-delete-dist-tags";
 import PackageAddDistTags from "../routes/package-add-dist-tags";
 import Search from "../routes/search";
+import PackageProxy from "../routes/package-proxy";
+import AuditProxy from "../routes/audit-proxy";
 
 export default function(container: Container) {
   container.set("route-package-get-json", function() {
     return new PackageGetJson(
       container.get("storage"),
-      container.get("proxy"),
-      container.get("config").proxyEnabled
+      container.get("route-package-proxy"),
+      container.get("config").get("proxyEnabled")
     );
   });
 
@@ -50,5 +52,13 @@ export default function(container: Container) {
 
   container.set("route-search", function() {
     return new Search(container.get("storage"));
+  });
+
+  container.set("route-package-proxy", function() {
+    return new PackageProxy(container.get("config").get("proxyUrl"), container.get("axios"));
+  });
+
+  container.set("route-audit-proxy", function() {
+    return new AuditProxy(container.get("config").get("proxyUrl"), container.get("axios"), container.get("config").get("proxyAudit"));
   });
 }

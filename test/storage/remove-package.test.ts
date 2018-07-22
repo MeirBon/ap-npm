@@ -1,8 +1,8 @@
 import "mocha";
 import * as TypeMoq from "typemoq";
 import { expect } from "chai";
-import removePackage from "../../../src/storage/filesystem/utils/remove-package";
-import IFS from "../../../src/storage/filesystem/fs-interface";
+import removePackage from "../../src/storage/filesystem/utils/remove-package";
+import IFS from "../../src/storage/filesystem/fs-interface";
 
 describe("storage:filesystem:utils:remove-package", () => {
   it("should throw when package does not exist", async () => {
