@@ -2,6 +2,7 @@ import { join } from "path";
 import { IRequest } from "../../storage-provider";
 import Logger from "../../../util/logger";
 import IFS from "../fs-interface";
+import { valid } from "semver";
 
 export default async (
   fs: IFS,
@@ -36,20 +37,30 @@ export default async (
     throw Error("Invalid attachment-name or new-version");
   }
 
-  const filePath = folderPath + "/" + packageName + "-" + newVersion + ".tgz";
+  const filePath = join(folderPath, packageName + "-" + newVersion + ".tgz");
 
-  const packageJson = JSON.parse(await fs.readFile(packageInfoLocation));
+  let packageJson;
+  try {
+    const string = await fs.readFile(packageInfoLocation);
+    packageJson = JSON.parse(string);
+  } catch (err) {
+    return false;
+  }
+
+  if (!valid(newVersion)) {
+    throw Error("Invalid new version");
+  }
 
   packageJson.versions[newVersion] = packageData.versions[newVersion];
 
   const distTags = packageJson["dist-tags"];
   const newDistTags = packageData["dist-tags"];
 
-  for (const key in newDistTags) {
-    if (newDistTags.hasOwnProperty(key)) {
-      distTags[key] = newDistTags[key];
-    }
-  }
+  await Promise.all(Object.keys(newDistTags)
+    .map(async (k: string) => {
+      distTags[k] = newDistTags[k];
+    })
+  );
 
   packageJson["dist-tags"] = distTags;
 

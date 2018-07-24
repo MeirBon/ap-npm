@@ -12,8 +12,8 @@ export default async (
 ): Promise<boolean> => {
   const packageName = request.name;
   const packageScope = request.scope;
-  let attachmentName = "~invalid";
 
+  let attachmentName = "~invalid";
   for (const key in packageData._attachments) {
     attachmentName = key;
   }

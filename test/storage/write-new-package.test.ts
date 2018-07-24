@@ -1,12 +1,12 @@
 import "mocha";
 import * as TypeMoq from "typemoq";
 import { expect } from "chai";
-import writePackage from "../../src/storage/filesystem/utils/write-package";
+import writeNewPackage from "../../src/storage/filesystem/utils/write-new-package";
 import IFS from "../../src/storage/filesystem/fs-interface";
 import WriteStream = NodeJS.WriteStream;
 import Logger from "../../src/util/logger";
 
-describe("storage:filesystem:utils:write-package-version", () => {
+describe("storage:filesystem:utils:write-new-package", () => {
   it("should return false when fs throws", async () => {
     const fs = TypeMoq.Mock.ofType<IFS>();
     const stream = TypeMoq.Mock.ofType<WriteStream>();
