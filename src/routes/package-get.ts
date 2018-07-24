@@ -11,8 +11,8 @@ export default class PackageGet extends Route {
   }
 
   public async process(req: Request, res: Response): Promise<void> {
-    const packageName = req.params.scope;
-    const packageScope = req.params.package;
+    const packageName = req.params.package;
+    const packageScope = req.params.scope;
     const fileName = req.params.filename;
 
     try {
@@ -23,7 +23,7 @@ export default class PackageGet extends Route {
       });
       res.status(200).send(data);
     } catch (err) {
-      res.status(404).send({ message: err });
+      res.status(404).send({ ok: false, message: err });
     }
   }
 }

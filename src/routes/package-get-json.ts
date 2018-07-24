@@ -25,15 +25,19 @@ export default class PackageGetJson extends Route {
 
       if (typeof packageJson === "object") {
         res.status(200).send(packageJson);
+        return;
       } else {
-        res.status(404).send({ message: "Package not found" });
+        res.status(404).send({ ok: false, message: "Package not found" });
+        if (!this.proxyEnabled) {
+          return;
+        }
       }
-    } catch (err) {
-      if (this.proxyEnabled) {
-        await this.proxy.process(req, res);
-      } else {
-        res.status(500).send({ message: "Internal server error" });
-      }
+    } catch (err) {}
+
+    if (this.proxyEnabled) {
+      await this.proxy.process(req, res);
+      return;
     }
+    res.status(500).send({ ok: false, message: "Internal server error" });
   }
 }
