@@ -1,19 +1,19 @@
 import Route from "./route";
-import Filesystem from "../storage/filesystem";
 import { Request, Response } from "express";
+import IStorageProvider from "../storage/storage-provider";
 
 export default class PackageGet extends Route {
-  private storage: Filesystem;
+  private storage: IStorageProvider;
 
-  constructor(storage: Filesystem) {
+  constructor(storage: IStorageProvider) {
     super();
     this.storage = storage;
   }
 
   public async process(req: Request, res: Response): Promise<void> {
-    const packageName = req.body._packageName;
-    const packageScope = req.body._scope;
-    const fileName = req.body._requestedFile;
+    const packageName = req.params.scope;
+    const packageScope = req.params.package;
+    const fileName = req.params.filename;
 
     try {
       const data = await this.storage.getPackage({

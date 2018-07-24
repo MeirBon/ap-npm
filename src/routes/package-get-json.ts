@@ -2,13 +2,14 @@ import Route from "./route";
 import Filesystem from "../storage/filesystem";
 import PackageProxy from "./package-proxy";
 import { Request, Response } from "express";
+import IStorageProvider from "../storage/storage-provider";
 
 export default class PackageGetJson extends Route {
-  private storage: Filesystem;
+  private storage: IStorageProvider;
   private proxy: PackageProxy;
   private readonly proxyEnabled: boolean;
 
-  constructor(storage: Filesystem, proxy: PackageProxy, proxyEnabled: boolean) {
+  constructor(storage: IStorageProvider, proxy: PackageProxy, proxyEnabled: boolean) {
     super();
     this.storage = storage;
     this.proxy = proxy;

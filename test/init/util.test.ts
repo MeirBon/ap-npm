@@ -1,48 +1,56 @@
 import "mocha";
 import { expect } from "chai";
 import * as TypeMoq from "typemoq";
-import storageInit from "../../src/init/storage-init";
+import * as fs from "async-file";
+import * as axios from "@contentful/axios";
+import utilInit from "../../src/init/util-init";
 import Container from "../../src/util/container";
-import Logger from "../../src/util/logger";
+import { AuthManager } from "../../src/auth";
+import AuthProvider from "../../src/auth/auth-provider";
 import IFS from "../../src/storage/filesystem/fs-interface";
-import Filesystem from "../../src/storage/filesystem";
-import { join } from "path";
-import * as fs from "fs";
 import { Buffer } from "buffer";
+import Filesystem from "../../lib/src/storage/filesystem";
+import Validator from "../../src/util/validator";
+import Logger from "../../src/util/logger";
+import { join } from "path";
 
-describe("init:storage", () => {
+describe("init:util", () => {
   it("should init correctly", async () => {
     let container = new Container();
-    storageInit(container);
+    utilInit(container);
 
-    expect(container.has("storage")).true;
-    expect(container.has("storage-filesystem")).true;
+    expect(container.has("fs")).true;
+    expect(container.has("express")).true;
+    expect(container.has("validator")).true;
+    expect(container.has("auth")).true;
+    expect(container.has("auth-adapter")).true;
+    expect(container.has("axios")).true;
+    expect(container.has("logger")).true;
+    expect(container.get("fs")).to.be.a("object");
 
     const config = new Map<string, any>();
-    const fs = new _testFS(true);
-
-    container.set("fs", fs);
-    config.set("workDir", "/");
-    config.set("storage", {
-      directory: "test"
+    config.set("auth", {
+      adapter: "default"
     });
+    config.set("workDir", "/");
     container.set("config", config);
-    container.set("logger", TypeMoq.Mock.ofType<Logger>(Logger).object);
+    container.set("fs", new _testFS(true));
+    container.set("storage", TypeMoq.Mock.ofType<Filesystem>());
 
-    expect(container.get("storage")).to.be.instanceof(Filesystem);
+    expect(container.get("express"));
+    expect(container.get("validator")).to.be.instanceof(Validator);
+    expect(container.get("auth")).to.be.instanceof(AuthManager);
+    expect(container.get("auth-adapter")).to.be.instanceof(AuthProvider);
+    expect(container.get("axios"));
+    expect(container.get("logger")).to.be.instanceof(Logger);
 
     container = new Container();
-    storageInit(container);
-    fs.bool = false;
-    container.set("fs", fs);
-    config.set("workDir", "/");
-    config.set("storage", {
-      directory: "test"
+    config.set("auth", {
+      adapter: join(__dirname, "custom-auth-provider.ts")
     });
     container.set("config", config);
-    container.set("logger", TypeMoq.Mock.ofType<Logger>(Logger).object);
-    expect(container.get("storage")).to.be.instanceof(Filesystem);
-
+    utilInit(container);
+    expect(container.get("auth-adapter")).to.be.instanceof(AuthProvider);
   });
 });
 

@@ -5,15 +5,16 @@ import Validator from "../util/validator";
 import { Request, Response } from "express";
 import { version } from "punycode";
 import { IncomingHttpHeaders } from "http";
+import IStorageProvider from "../storage/storage-provider";
 
 export default class PackageDelete extends Route {
-  private storage: Filesystem;
+  private storage: IStorageProvider;
   private packageValidator: Validator;
   private config: Map<string, any>;
   private readonly remove: boolean;
 
   constructor(
-    storage: Filesystem,
+    storage: IStorageProvider,
     validator: Validator,
     config: Map<string, any>
   ) {

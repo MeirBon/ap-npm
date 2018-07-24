@@ -1,11 +1,12 @@
 import Route from "./route";
 import { Request, Response } from "express";
 import Filesystem from "../storage/filesystem";
+import IStorageProvider from "../storage/storage-provider";
 
 export default class Search extends Route {
-  private storage: Filesystem;
+  private storage: IStorageProvider;
 
-  constructor(storage: Filesystem) {
+  constructor(storage: IStorageProvider) {
     super();
     this.storage = storage;
   }

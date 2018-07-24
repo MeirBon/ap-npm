@@ -14,12 +14,7 @@ describe("utils:validator", () => {
       ["workDir", "/"],
       ["storage", { directory: "" }]
     ]);
-    const storage = TypeMoq.Mock.ofType<Filesystem>(
-      Filesystem,
-      undefined,
-      undefined,
-      config
-    );
+    const storage = TypeMoq.Mock.ofType<Filesystem>();
     storage.setup(x => x.getPackageJson(request)).returns(async () => {
       return {
         "dist-tags": {
@@ -53,12 +48,7 @@ describe("utils:validator", () => {
       ["storage", { directory: "" }]
     ]);
 
-    const storage = TypeMoq.Mock.ofType<Filesystem>(
-      Filesystem,
-      undefined,
-      undefined,
-      config
-    );
+    const storage = TypeMoq.Mock.ofType<Filesystem>();
     storage.setup(x => x.getPackageJson(request)).returns(async () => {
       return {
         "dist-tags": {
@@ -82,12 +72,7 @@ describe("utils:validator", () => {
       ["storage", { directory: "" }]
     ]);
 
-    const storage = TypeMoq.Mock.ofType<Filesystem>(
-      Filesystem,
-      undefined,
-      undefined,
-      config
-    );
+    const storage = TypeMoq.Mock.ofType<Filesystem>();
 
     const validator = new Validator(storage.object);
 
@@ -109,12 +94,7 @@ describe("utils:validator", () => {
       ["storage", { directory: "" }]
     ]);
 
-    const storage = TypeMoq.Mock.ofType<Filesystem>(
-      Filesystem,
-      undefined,
-      undefined,
-      config
-    );
+    const storage = TypeMoq.Mock.ofType<Filesystem>();
     storage.setup(x => x.getPackageJson(request)).returns(async () => {
       return {
         "dist-tags": {

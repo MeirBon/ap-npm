@@ -28,6 +28,19 @@ export default class Filesystem implements IStorageProvider {
       this.config.get("workDir"),
       this.config.get("storage").directory
     );
+
+    fs.exists(this.storageLocation)
+      .then(result => {
+        if (!result) {
+          return fs.createDirectory(this.storageLocation);
+        }
+      })
+      .catch(err => {
+        logger.error(
+          "Failed to initialize filesystem-structure in " + this.storageLocation,
+          err
+        );
+      });
   }
 
   public async removePackage(request: IRequest): Promise<boolean> {
@@ -35,11 +48,20 @@ export default class Filesystem implements IStorageProvider {
   }
 
   public async removePackageVersion(request: IRequest): Promise<boolean> {
-    return await removePackageVersion(this.fs, request, this.storageLocation,
-      this.getPackageJson, this.removePackage, this.updatePackageJson);
+    return await removePackageVersion(
+      this.fs,
+      request,
+      this.storageLocation,
+      this.getPackageJson,
+      this.removePackage,
+      this.updatePackageJson
+    );
   }
 
-  public async writeNewPackage(request: IRequest, packageData: any): Promise<boolean> {
+  public async writeNewPackage(
+    request: IRequest,
+    packageData: any
+  ): Promise<boolean> {
     return await writeNewPackage(
       this.fs,
       request,
@@ -49,7 +71,10 @@ export default class Filesystem implements IStorageProvider {
     );
   }
 
-  public async writePackage(request: IRequest, packageData: any): Promise<boolean> {
+  public async writePackage(
+    request: IRequest,
+    packageData: any
+  ): Promise<boolean> {
     return await writePackage(
       this.fs,
       request,
@@ -71,8 +96,16 @@ export default class Filesystem implements IStorageProvider {
     return await isPackageAvailable(this.fs, request, this.storageLocation);
   }
 
-  public async updatePackageJson(request: IRequest, packageJson: any): Promise<boolean> {
-    return await updatePackageJson(this.fs, request, packageJson, this.storageLocation);
+  public async updatePackageJson(
+    request: IRequest,
+    packageJson: any
+  ): Promise<boolean> {
+    return await updatePackageJson(
+      this.fs,
+      request,
+      packageJson,
+      this.storageLocation
+    );
   }
 
   public async getPackageListing(): Promise<Map<string, any>> {

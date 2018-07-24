@@ -15,17 +15,21 @@ export default class PackageProxy extends Route {
   public async process(req: Request, res: Response): Promise<void> {
     try {
       const scope = req.params.scope;
-      const name = req.params.packageName;
+      const name = req.params.package;
 
       const urlPath = scope ? `${scope}/${name}` : `${name}`;
       const url = this.proxyUrl.endsWith("/")
         ? this.proxyUrl + urlPath
         : this.proxyUrl + "/" + urlPath;
 
-      const response = await this.client.get(url);
-      res.status(response.status).send(response.data);
+      if (url !== undefined) {
+        const response = await this.client.get(url);
+        res.status(response.status).send(response.data);
+        return;
+      }
     } catch (err) {
-      res.status(500).send(err.message);
     }
+
+    res.status(500).send("Internal server error");
   }
 }

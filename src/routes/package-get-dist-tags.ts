@@ -1,11 +1,12 @@
 import Route from "./route";
 import Filesystem from "../storage/filesystem";
 import { Request, Response } from "express";
+import IStorageProvider from "../storage/storage-provider";
 
 export default class PackageGetDistTags extends Route {
-  private storage: Filesystem;
+  private storage: IStorageProvider;
 
-  constructor(storage: Filesystem) {
+  constructor(storage: IStorageProvider) {
     super();
     this.storage = storage;
   }

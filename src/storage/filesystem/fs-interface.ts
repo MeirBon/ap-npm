@@ -74,11 +74,6 @@ export default interface IFS {
 
   utimes(path: string, atime: Date | number, mtime: Date | number): Promise<void>;
 
-  write(fd: number, buffer: Buffer, offset: number, length: number, position?: number): Promise<{
-    written: number;
-    buffer: Buffer;
-  }>;
-
   write(fd: number, data: any, offset?: number, encoding?: "ascii" | "base64" | "binary" | "hex" | "ucs2" | "utf16le" | "utf8"): Promise<{
     written: number;
     buffer: Buffer;

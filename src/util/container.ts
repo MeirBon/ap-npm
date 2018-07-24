@@ -7,18 +7,17 @@ export default class Container {
     this.resolved = new Map<string, any>();
   }
 
-  public set(name: string, service: any) {
+  set(name: string, service: any) {
     this.services.set(name, service);
   }
 
-  public has(name: string): boolean {
+  has(name: string): boolean {
     return this.services.has(name);
   }
 
-  public get(name: string): any {
-    const resolved = this.resolved.get(name);
-    if (resolved) {
-      return resolved;
+  get<T>(name: string): T | any {
+    if (this.resolved.has(name)) {
+      return this.resolved.get(name);
     }
 
     if (this.services.has(name)) {

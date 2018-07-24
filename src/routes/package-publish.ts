@@ -2,12 +2,13 @@ import Route from "./route";
 import Filesystem from "../storage/filesystem";
 import Validator from "../util/validator";
 import { Request, Response } from "express";
+import IStorageProvider from "../storage/storage-provider";
 
 export default class PackagePublish extends Route {
-  private storage: Filesystem;
+  private storage: IStorageProvider;
   private packageValidator: Validator;
 
-  constructor(storage: Filesystem, validator: Validator) {
+  constructor(storage: IStorageProvider, validator: Validator) {
     super();
     this.storage = storage;
     this.packageValidator = validator;
