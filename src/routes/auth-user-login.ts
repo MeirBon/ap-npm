@@ -16,10 +16,8 @@ export default class AuthUserLogin extends Route {
         req.body.name,
         req.body.password
       );
-      if (typeof result === "string") {
-        res.status(200).send({ token: result });
-        return;
-      }
+      res.status(200).send({ token: result });
+      return;
     } catch (err) {}
 
     try {
