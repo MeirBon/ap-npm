@@ -1,10 +1,7 @@
 import * as semver from "semver";
 import Route from "./route";
-import Filesystem from "../storage/filesystem";
 import Validator from "../util/validator";
 import { Request, Response } from "express";
-import { version } from "punycode";
-import { IncomingHttpHeaders } from "http";
 import IStorageProvider from "../storage/storage-provider";
 
 export default class PackageDelete extends Route {
@@ -23,71 +20,85 @@ export default class PackageDelete extends Route {
     this.packageValidator = validator;
     this.config = config;
     if (this.config.has("auth")) {
-      const auth = this.config.get("auth");
-      if (auth) {
-        this.remove = auth.remove;
-      } else {
-        this.remove = false;
-      }
+      this.remove = this.config.get("auth").remove;
     } else {
       this.remove = false;
     }
   }
 
   public async process(req: Request, res: Response): Promise<void> {
-    if (!this.remove) {
+    if (this.remove !== true) {
       res.status(403).send({ message: "Not allowed to delete packages" });
       return;
     }
 
     const packageName = req.params.package;
     const packageScope = req.params.scope;
-    const headers: IncomingHttpHeaders = req.headers;
 
     if (!req.headers.referer) {
       res.status(400).send({ message: "No referer given" });
       return;
     }
 
-    const referer: string = Array.isArray(headers.referer) ?
-      String(headers.referer![0]) :
-      String(headers.referer);
+    let packageVersion: string | undefined = undefined;
+    const referer: string = Array.isArray(req.headers.referer)
+      ? String(req.headers.referer[0])
+      : String(req.headers.referer);
 
-    const packageVersion: string = referer.indexOf("@") > -1 ?
-      referer.split("@")[referer.split("@").length - 1] :
-      referer.split(" ")[0];
-
-    if (packageVersion === "unpublish") {
-      const result = await this.storage.removePackage({
-        name: packageName,
-        scope: packageScope
-      });
-
-      if (result === true) {
-        res.status(200).send({ ok: "Package deleted" });
-        return;
-      } else {
-        res
-          .status(500)
-          .send({ message: "Cannot delete package from filesystem" });
-        return;
-      }
-    } else if (semver.valid(packageVersion)) {
-      const result = await this.storage.removePackageVersion({
-        name: packageName,
-        scope: packageScope,
-        version: packageVersion
-      });
-
-      if (result === true) {
-        res.status(200).send({ ok: `Package version: ${version} deleted` });
-        return;
-      } else {
-        res
-          .status(500)
-          .send({ message: "Cannot delete package from filesystem" });
-        return;
-      }
+    const slices: string[] = referer.split(" ");
+    if (slices.length < 2) {
+      res.status(400).send({ ok: false, message: "Invalid referer" });
+      return;
     }
+
+    const command: string = slices[0];
+
+    if (command !== "unpublish") {
+      res
+        .status(400)
+        .send({ ok: false, message: `Unknown command ${command}` });
+      return;
+    }
+
+    if (slices[1].indexOf("@") > -1) {
+      const pkgSlices = slices[1].split("@");
+      packageVersion = pkgSlices[1];
+    }
+
+    if (packageVersion !== undefined && semver.valid(packageVersion)) {
+      try {
+        if (
+          await this.storage.removePackageVersion({
+            name: packageName,
+            scope: packageScope,
+            version: packageVersion
+          })
+        ) {
+          res
+            .status(200)
+            .send({
+              ok: true,
+              message: `Package version: ${packageVersion} deleted`
+            });
+          return;
+        }
+      } catch (err) {}
+    } else {
+      try {
+        if (
+          await this.storage.removePackage({
+            name: packageName,
+            scope: packageScope
+          })
+        ) {
+          res.status(200).send({ ok: true, message: "Package deleted" });
+          return;
+        }
+      } catch (err) {}
+    }
+
+    res
+      .status(500)
+      .send({ ok: false, message: "Cannot delete package from filesystem" });
   }
 }

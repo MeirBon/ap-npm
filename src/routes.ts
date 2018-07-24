@@ -26,7 +26,10 @@ export default function InitRoutes(app: Application, container: Container) {
   const logger: Logger = container.get("logger");
 
   app.use((req: Request, res: Response, next: NextFunction) => {
-    logger.log(`\nMETHOD: ${req.method}, URL: ${decodeURIComponent(req.originalUrl)}\n`);
+    logger.log(
+      `\nMETHOD: ${req.method}, URL: ${decodeURIComponent(req.originalUrl)}\n`
+    );
+
     next();
   });
   app.use(bodyParser.json({ strict: false, limit: "10mb" }));
@@ -42,10 +45,14 @@ export default function InitRoutes(app: Application, container: Container) {
     return route.process(req, res);
   });
 
-  app.get("/api/packages", access.can(AccessType.Access), (req: Request, res: Response) => {
-    const route: ApiPackage = container.get("route-api-package");
-    return route.process(req, res);
-  });
+  app.get(
+    "/api/packages",
+    access.can(AccessType.Access),
+    (req: Request, res: Response) => {
+      const route: ApiPackage = container.get("route-api-package");
+      return route.process(req, res);
+    }
+  );
 
   app.get(
     "/api/package/:package?",
@@ -56,27 +63,62 @@ export default function InitRoutes(app: Application, container: Container) {
     }
   );
 
-  app.get("/api/package/:scope%2f:package", access.can(AccessType.Access),
+  app.get(
+    "/api/package/:scope%2f:package",
+    access.can(AccessType.Access),
     (req: Request, res: Response) => {
       const route: ApiPackage = container.get("route-api-package");
       return route.process(req, res);
     }
   );
 
-  app.get("/-/v1/search", access.can(AccessType.Access), (req: Request, res: Response) => {
-    const route: Search = container.get("route-search");
-    return route.process(req, res);
-  });
+  app.get(
+    "/:scope%2f:package",
+    access.can(AccessType.Publish),
+    (req: Request, res: Response, next: NextFunction) => {
+      if (req.query.write === "true") {
+        const route: PackageDelete = container.get("route-package-delete");
+        return route.process(req, res);
+      } else {
+        next();
+      }
+    }
+  );
+
+  app.get(
+    "/:package",
+    access.can(AccessType.Publish),
+    (req: Request, res: Response, next: NextFunction) => {
+      if (req.query.write === "true") {
+        const route: PackageDelete = container.get("route-package-delete");
+        return route.process(req, res);
+      } else {
+        next();
+      }
+    }
+  );
+
+  app.get(
+    "/-/v1/search",
+    access.can(AccessType.Access),
+    (req: Request, res: Response) => {
+      const route: Search = container.get("route-search");
+      return route.process(req, res);
+    }
+  );
 
   // *** AUTH ***
   app.post("/-/v1/login", (req: Request, res: Response) => {
     const route: AuthUserLogin = container.get("route-auth-user-login");
     return route.process(req, res);
   });
-  app.put("/-/user/org.couchdb.user:_rev?/:revision?", (req: Request, res: Response) => {
-    const route: AuthUserLogin = container.get("route-auth-user-login");
-    return route.process(req, res);
-  });
+  app.put(
+    "/-/user/org.couchdb.user:_rev?/:revision?",
+    (req: Request, res: Response) => {
+      const route: AuthUserLogin = container.get("route-auth-user-login");
+      return route.process(req, res);
+    }
+  );
   // Logout
   app.delete("/-/user/token/:token?", (req: Request, res: Response) => {
     const route: AuthUserLogout = container.get("route-auth-user-logout");
@@ -93,72 +135,105 @@ export default function InitRoutes(app: Application, container: Container) {
     return route.process(req, res);
   });
 
-  app.get("/:scope%2f:package/:version?", access.can(AccessType.Access), (req: Request, res: Response) => {
-    const route: PackageGetJson = container.get("route-package-get-json");
-    return route.process(req, res);
-  });
-
-  app.get("/:package/:version?", access.can(AccessType.Access), (req: Request, res: Response) => {
-    const route: PackageGetJson = container.get("route-package-get-json");
-    return route.process(req, res);
-  });
-
-  // Request for package file data
-  app.get("/:scope%2f:package/-/:filename", access.can(AccessType.Access), (req: Request, res: Response) => {
-      const route: PackageGet = container.get("route-package-get");
-      return route.process(req, res);
-    }
-  );
-
-  app.get("/:package/-/:filename", access.can(AccessType.Access), (req: Request, res: Response) => {
-      const route: PackageGet = container.get("route-package-get");
-      return route.process(req, res);
-    }
-  );
-
-  app.get("/-/package/:scope%2f:package/dist-tags", access.can(AccessType.Access),
-    (req: Request, res: Response) => {
-      const route: PackageGetDistTags = container.get("route-package-get-dist-tags");
-      return route.process(req, res);
-    }
-  );
-
-  app.get("/-/package/:package/dist-tags",
+  app.get(
+    "/:scope%2f:package/:version?",
     access.can(AccessType.Access),
     (req: Request, res: Response) => {
-      const route: PackageGetDistTags = container.get("route-package-get-dist-tags");
+      const route: PackageGetJson = container.get("route-package-get-json");
       return route.process(req, res);
     }
   );
 
-  app.delete("/-/package/:scope%2f:package/dist-tags/:tag",
-    access.can(AccessType.Publish),
+  app.get(
+    "/:package/:version?",
+    access.can(AccessType.Access),
     (req: Request, res: Response) => {
-      const route: PackageDeleteDistTags = container.get("route-package-delete-dist-tags");
+      const route: PackageGetJson = container.get("route-package-get-json");
       return route.process(req, res);
     }
   );
 
-  app.delete("/-/package/:package/dist-tags/:tag",
-    access.can(AccessType.Publish),
+  // Request for package file data
+  app.get(
+    "/:scope%2f:package/-/:filename",
+    access.can(AccessType.Access),
     (req: Request, res: Response) => {
-      const route: PackageDeleteDistTags = container.get("route-package-delete-dist-tags");
+      const route: PackageGet = container.get("route-package-get");
       return route.process(req, res);
     }
   );
 
-  app.put("/-/package/:scope%2f:package/dist-tags/:tag",
-    access.can(AccessType.Publish),
+  app.get(
+    '/:this.config.get("auth")ge/-/:filename',
+    access.can(AccessType.Access),
     (req: Request, res: Response) => {
-      const route: PackageAddDistTags = container.get("route-package-add-dist-tags");
+      const route: PackageGet = container.get("route-package-get");
       return route.process(req, res);
     }
   );
 
-  app.put("/-/package/:package/dist-tags/:tag",
+  app.get(
+    "/-/package/:scope%2f:package/dist-tags",
+    access.can(AccessType.Access),
+    (req: Request, res: Response) => {
+      const route: PackageGetDistTags = container.get(
+        "route-package-get-dist-tags"
+      );
+      return route.process(req, res);
+    }
+  );
+
+  app.get(
+    "/-/package/:package/dist-tags",
+    access.can(AccessType.Access),
+    (req: Request, res: Response) => {
+      const route: PackageGetDistTags = container.get(
+        "route-package-get-dist-tags"
+      );
+      return route.process(req, res);
+    }
+  );
+
+  app.delete(
+    "/-/package/:scope%2f:package/dist-tags/:tag",
     access.can(AccessType.Publish),
     (req: Request, res: Response) => {
-      const route: PackageAddDistTags = container.get("route-package-add-dist-tags");
+      const route: PackageDeleteDistTags = container.get(
+        "route-package-delete-dist-tags"
+      );
+      return route.process(req, res);
+    }
+  );
+
+  app.delete(
+    "/-/package/:package/dist-tags/:tag",
+    access.can(AccessType.Publish),
+    (req: Request, res: Response) => {
+      const route: PackageDeleteDistTags = container.get(
+        "route-package-delete-dist-tags"
+      );
+      return route.process(req, res);
+    }
+  );
+
+  app.put(
+    "/-/package/:scope%2f:package/dist-tags/:tag",
+    access.can(AccessType.Publish),
+    (req: Request, res: Response) => {
+      const route: PackageAddDistTags = container.get(
+        "route-package-add-dist-tags"
+      );
+      return route.process(req, res);
+    }
+  );
+
+  app.put(
+    "/-/package/:package/dist-tags/:tag",
+    access.can(AccessType.Publish),
+    (req: Request, res: Response) => {
+      const route: PackageAddDistTags = container.get(
+        "route-package-add-dist-tags"
+      );
       return route.process(req, res);
     }
   );
@@ -179,24 +254,6 @@ export default function InitRoutes(app: Application, container: Container) {
     (req: Request, res: Response) => {
       logger.info("PackagePublish");
       const route: PackagePublish = container.get("route-package-publish");
-      return route.process(req, res);
-    }
-  );
-
-  app.delete(
-    "/:scope%2f:package/:rev?/:revision?",
-    access.can(AccessType.Publish),
-    (req: Request, res: Response) => {
-      const route: PackageDelete = container.get("route-package-delete");
-      return route.process(req, res);
-    }
-  );
-
-  app.delete(
-    "/:package/:rev?/:revision?",
-    access.can(AccessType.Publish),
-    (req: Request, res: Response) => {
-      const route: PackageDelete = container.get("route-package-delete");
       return route.process(req, res);
     }
   );

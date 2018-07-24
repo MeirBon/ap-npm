@@ -6,7 +6,7 @@ import Filesystem from "../../src/storage/filesystem";
 import PackageAddDistTags from "../../src/routes/package-add-dist-tags";
 
 describe("routes:package-add-dist-tags", () => {
-  it("should return package file", async () => {
+  it("should return a 400 for an invalid request", async () => {
     const storage = TypeMoq.Mock.ofType<Filesystem>();
     const req = httpMock.createRequest();
     req.body = 0;

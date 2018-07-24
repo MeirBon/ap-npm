@@ -35,18 +35,15 @@ export default class PackageDeleteDistTags extends Route {
 
         if (result === true) {
           res.status(200).send({
-            ok: "dist-tags updated"
+            ok: true,
+            message: "dist-tags updated"
           });
         } else {
-          res.status(404).send({ message: "Could not get dist-tags" });
-          return;
+          res.status(404).send({ message: "Could not update dist-tags" });
         }
-      } else {
-        res.status(404).send({ message: "Could not get dist-tags" });
         return;
       }
-    } catch (err) {
-      res.status(404).send({ message: err });
-    }
+    } catch (err) {}
+    res.status(404).send({ message: "Could not get dist-tags" });
   }
 }
