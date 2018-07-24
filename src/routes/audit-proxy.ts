@@ -25,8 +25,7 @@ export default class AuditProxy extends Route {
         );
 
         res.status(200).send(response.data);
-      } catch (err) {
-      }
+      } catch (err) {}
     }
 
     res.status(500).send({ ok: false });

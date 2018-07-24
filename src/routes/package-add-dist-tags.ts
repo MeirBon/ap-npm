@@ -1,5 +1,4 @@
 import Route from "./route";
-import Filesystem from "../storage/filesystem";
 import { Request, Response } from "express";
 import * as semver from "semver";
 import IStorageProvider from "../storage/storage-provider";
@@ -30,25 +29,31 @@ export default class PackageAddDistTags extends Route {
         scope: packageScope
       });
 
-      if (typeof packageJson === "object") {
-        if (typeof packageJson.versions[distTagVersion] !== "object") {
-          res.send(404).send({ message: "Version does not exist" });
-          return;
-        }
-
+      if (
+        typeof packageJson === "object" &&
+        typeof packageJson.versions[distTagVersion] === "object"
+      ) {
         packageJson["dist-tags"][distTag] = distTagVersion;
         const result = await this.storage.updatePackageJson(
           { name: packageName, scope: packageScope },
           packageJson
         );
         if (result) {
-          res.status(200).send({ ok: "dist-tags added" });
+          res.status(200).send({ ok: true, message: "dist-tags added" });
         } else {
-          res.status(404).send({ message: "Could not get dist-tags" });
+          res
+            .status(404)
+            .send({ ok: true, message: "Could not get dist-tags" });
         }
+        return;
       }
-    } catch (err) {
-      res.status(404).send({ message: err });
-    }
+    } catch (err) {}
+
+    res
+      .status(404)
+      .send({
+        ok: false,
+        message: "Could not find package or version of package"
+      });
   }
 }
