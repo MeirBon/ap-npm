@@ -23,6 +23,7 @@ export default class AuthUserLogin extends Route {
     try {
       const result = await this.auth.userAdd(req.body.name, req.body.password);
       res.status(201).send({ token: result });
+      return;
     } catch (err) {}
 
     res.status(401).send({ error: "Cannot create user" });

@@ -50,7 +50,8 @@ describe("routes:auth-user-login", () => {
     const res = httpMocks.createResponse();
 
     await route.process(req, res);
-    expect(res.statusCode).to.equal(200);
+    expect(res.statusCode).to.equal(201);
+    expect(res._getData().token).to.equal("test");
   });
 
   it("should send a 401 if user cannot be created", async () => {

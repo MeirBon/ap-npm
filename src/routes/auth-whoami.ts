@@ -17,11 +17,9 @@ export default class AuthWhoami extends Route {
       try {
         const user = await this.auth.verifyToken(token);
         res.status(200).send({ username: user });
-      } catch (err) {
-        res.status(401).send("Invalid user");
-      }
-    } else {
-      res.status(401).send("Invalid user");
+        return;
+      } catch (err) {}
     }
+    res.status(401).send("Invalid user");
   }
 }
