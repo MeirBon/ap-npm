@@ -1,5 +1,4 @@
 import Route from "./route";
-import Filesystem from "../storage/filesystem";
 import Validator from "../util/validator";
 import { Request, Response } from "express";
 import IStorageProvider from "../storage/storage-provider";
@@ -20,13 +19,16 @@ export default class PackagePublish extends Route {
     const packageScope = req.params.scope;
 
     if (!packageData._attachments) {
-      const result = await this.deprecateUpdater(packageData);
-      if (result) {
+      const result = await this.storage.updatePackageJson(
+        { name: packageName, scope: packageScope },
+        packageData
+      );
+      if (result === true) {
         res.status(200).send({ ok: "package.json updated" });
+        return;
       } else {
-        res
-          .status(500)
-          .send({ message: "Error, cannot update package.json" });
+        res.status(500).send({ message: "Error, cannot update package.json" });
+        return;
       }
     }
 
@@ -38,39 +40,32 @@ export default class PackagePublish extends Route {
     if (available) {
       await this.writePackage(
         { name: packageName, scope: packageScope },
-        req, res
+        req,
+        res
       );
     } else {
       await this.writeNewPackage(
         { name: packageName, scope: packageScope },
-        req, res
+        req,
+        res
       );
     }
   }
 
-  private async deprecateUpdater(packageData: any): Promise<void> {
-    await this.storage.updatePackageJson(
-      { name: packageData._packageName, scope: packageData._scope },
-      packageData
-    );
-  }
-
   private async writePackage(
     pkg: INameScope,
-    req: Request, res: Response
+    req: Request,
+    res: Response
   ): Promise<void> {
-    let distTag = "~invalid";
-    for (const key in req.body["dist-tags"]) {
-      distTag = key;
-    }
-
-    if (distTag === "~invalid") {
-      res.status(400).send({ message: "Invalid request, no dist-tag given" });
+    const keys = Object.keys(req.body["dist-tags"] ? req.body["dist-tags"] : {});
+    if (keys.length === 0) {
+      res
+        .status(400)
+        .send({ ok: false, message: "Invalid request, no dist-tag given" });
       return;
     }
-
+    const distTag = keys[0];
     const packageData = req.body;
-
     const hasDistTag = await this.packageValidator.hasDistTag(pkg, distTag);
 
     if (hasDistTag === true) {
@@ -87,16 +82,13 @@ export default class PackagePublish extends Route {
           message: "Cannot publish, given version already exists or is invalid"
         });
       } else {
-        const result = await this.storage.writePackage(
-          pkg,
-          packageData
-        );
-
-        if (result === true) {
-          res.status(201).send({ ok: "package published" });
-        } else {
-          res.status(500).send({ message: "Error while writing package" });
-        }
+        try {
+          if (await this.storage.writePackage(pkg, packageData)) {
+            res.status(201).send({ ok: true, message: "Package published" });
+            return;
+          }
+        } catch (err) {}
+        res.status(500).send({ ok: false, message: "Error while writing package" });
       }
     } else {
       res.status(400).send({
@@ -105,17 +97,18 @@ export default class PackagePublish extends Route {
     }
   }
 
-  private async writeNewPackage(pkg: INameScope, req: Request, res: Response): Promise<void> {
-    const result = await this.storage.writeNewPackage(
-      pkg,
-      req.body
-    );
-
-    if (result === true) {
-      res.status(201).send({ ok: "package published" });
-    } else {
-      res.status(500).send({ message: "Error while writing package" });
-    }
+  private async writeNewPackage(
+    pkg: INameScope,
+    req: Request,
+    res: Response
+  ): Promise<void> {
+    try {
+      if (await this.storage.writeNewPackage(pkg, req.body)) {
+        res.status(201).send({ ok: true, message: "package published" });
+        return;
+      }
+    } catch (err) {}
+    res.status(500).send({ ok: false, message: "Error while writing package" });
   }
 }
 

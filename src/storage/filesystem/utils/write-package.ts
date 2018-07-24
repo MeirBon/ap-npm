@@ -23,19 +23,17 @@ export default async (
 
   await fs.createDirectory(folderPath);
 
-  let attachmentName: string = "~invalid";
-  for (const key in packageData._attachments) {
-    attachmentName = key;
+  let keys = Object.keys(packageData._attachments);
+  if (keys.length === 0) {
+    throw Error("Invalid attachment");
   }
+  const attachmentName = keys[0];
 
-  let newVersion: string = "~invalid";
-  for (const key in packageData.versions) {
-    newVersion = key;
+  keys = Object.keys(packageData.versions);
+  if (keys.length === 0) {
+    throw Error("Invalid new-version");
   }
-
-  if (attachmentName === "~invalid" || newVersion === "~invalid") {
-    throw Error("Invalid attachment-name or new-version");
-  }
+  const newVersion = keys[0];
 
   const filePath = join(folderPath, packageName + "-" + newVersion + ".tgz");
 
@@ -79,9 +77,9 @@ export default async (
   }
 
   if (packageScope) {
-    logger.info(`Published new package: ${packageScope}/${packageName}`);
+    logger.info(`Published package: ${packageScope}/${packageName}`);
   } else {
-    logger.info(`Published new package: ${packageName}`);
+    logger.info(`Published package: ${packageName}`);
   }
 
   return true;

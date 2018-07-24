@@ -15,7 +15,7 @@ describe("storage:filesystem:utils:write-package", () => {
         "1.0.0": {}
       },
       _attachments: {
-        "file": (Buffer.from("test")).toString("base64")
+        "file": { data: (Buffer.from("test")).toString("base64") }
       },
       "dist-tags": {
         latest: "1.0.0"
@@ -25,12 +25,6 @@ describe("storage:filesystem:utils:write-package", () => {
     fs.setup(x => x.readFile(join("/", "a", "package.json"))).returns(async () => {
       throw Error();
     });
-
-    fs.setup(x => x.writeFile(join("/", "a", "package.json"), "{\"a\":\"b\"}")).returns(
-      async () => {
-        throw Error();
-      }
-    );
 
     expect(await writePackage(fs.object, {
       name: "a",
@@ -75,46 +69,12 @@ describe("storage:filesystem:utils:write-package", () => {
     }
   });
 
-  it("should throw on invalid attachment", async () => {
+  it("should throw on invalid version", async () => {
     const fs = TypeMoq.Mock.ofType<IFS>();
     const logger = TypeMoq.Mock.ofType<Logger>();
     const packageData = {
       versions: {
-        "1.0.0": {}
       },
-      _attachments: {},
-      "dist-tags": {
-        latest: "1.0.0"
-      }
-    };
-
-    fs.setup(x => x.readFile(join("/", "a", "package.json"))).returns(async () => {
-      return JSON.stringify({
-        versions: {
-          "0.9.0": {}
-        },
-        _attachments: {},
-        "dist-tags": {
-          latest: "0.9.0"
-        }
-      });
-    });
-
-    try {
-      await writePackage(fs.object, {
-        name: "a",
-        version: "1.0.0"
-      }, packageData, "/", logger.object);
-    } catch (err) {
-      expect(err.message).to.equal("Invalid attachment-name or new-version");
-    }
-  });
-
-  it("should throw on invalid attachment", async () => {
-    const fs = TypeMoq.Mock.ofType<IFS>();
-    const logger = TypeMoq.Mock.ofType<Logger>();
-    const packageData = {
-      versions: {},
       _attachments: {
         "file": {
           data: (Buffer.from("test")).toString("base64")
@@ -143,7 +103,43 @@ describe("storage:filesystem:utils:write-package", () => {
         version: "1.0.0"
       }, packageData, "/", logger.object);
     } catch (err) {
-      expect(err.message).to.equal("Invalid attachment-name or new-version");
+      expect(err.message).to.equal("Invalid new-version");
+    }
+  });
+
+  it("should throw on invalid attachment", async () => {
+    const fs = TypeMoq.Mock.ofType<IFS>();
+    const logger = TypeMoq.Mock.ofType<Logger>();
+    const packageData = {
+      versions: {
+        "1.0.0": {}
+      },
+      _attachments: {
+      },
+      "dist-tags": {
+        latest: "1.0.0"
+      }
+    };
+
+    fs.setup(x => x.readFile(join("/", "a", "package.json"))).returns(async () => {
+      return JSON.stringify({
+        versions: {
+          "0.9.0": {}
+        },
+        _attachments: {},
+        "dist-tags": {
+          latest: "0.9.0"
+        }
+      });
+    });
+
+    try {
+      await writePackage(fs.object, {
+        name: "a",
+        version: "1.0.0"
+      }, packageData, "/", logger.object);
+    } catch (err) {
+      expect(err.message).to.equal("Invalid attachment");
     }
   });
 
@@ -187,7 +183,7 @@ describe("storage:filesystem:utils:write-package", () => {
     );
 
     let called = false;
-    logger.setup(x => x.info("Published new package: a")).returns(() => {
+    logger.setup(x => x.info("Published package: a")).returns(() => {
       called = true;
     });
 
@@ -240,7 +236,7 @@ describe("storage:filesystem:utils:write-package", () => {
     );
 
     let called = false;
-    logger.setup(x => x.info("Published new package: b/a")).returns(() => {
+    logger.setup(x => x.info("Published package: b/a")).returns(() => {
       called = true;
     });
 
