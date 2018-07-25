@@ -13,18 +13,10 @@ export default class ApiPackage extends Route {
   public async process(req: Request, res: Response): Promise<void> {
     if (req.params.package !== undefined) {
       try {
-        let pkg;
-        if (req.params.scope !== undefined) {
-          pkg = await this.repository.getPackage(
-            req.params.package,
-            req.params.scope
-          );
-        } else {
-          pkg = await this.repository.getPackage(
-            req.params.package,
-            req.params.scope
-          );
-        }
+        const pkg = await this.repository.getPackage(
+          req.params.package,
+          req.params.scope
+        );
 
         res.status(200).send({
           package: await pkg.toObject()
@@ -35,18 +27,22 @@ export default class ApiPackage extends Route {
         });
       }
     } else {
-      const pkgs = await this.repository.getPackages();
-      const pkgsObjs: Array<object> = [];
+      try {
+        const pkgs = await this.repository.getPackages();
+        const pkgsObjs: Array<object> = [];
 
-      await Promise.all(
-        pkgs.map(async pkg => {
-          pkgsObjs.push(await pkg.toObject());
-        })
-      );
+        await Promise.all(
+          pkgs.map(async pkg => {
+            pkgsObjs.push(await pkg.toObject());
+          })
+        );
 
-      res.status(200).send({
-        packages: pkgsObjs
-      });
+        res.status(200).send({
+          packages: pkgsObjs
+        });
+      } catch (err) {
+        res.status(500).send({ ok: false, message: "Internal server error" });
+      }
     }
   }
 }
