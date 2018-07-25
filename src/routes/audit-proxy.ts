@@ -24,10 +24,11 @@ export default class AuditProxy extends Route {
           req.body
         );
 
-        res.status(200).send(response.data);
+        res.status(response.status).send(response.data);
+        return;
       } catch (err) {}
     }
 
-    res.status(500).send({ ok: false });
+    res.status(500).send({ ok: false, message: "Internal server error" });
   }
 }

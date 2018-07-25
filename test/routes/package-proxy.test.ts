@@ -7,7 +7,7 @@ import PackageProxy from "../../src/routes/package-proxy";
 import * as httpMock from "node-mocks-http";
 
 describe("routes:package-proxy", () => {
-  it("should return true on valid higher version", async () => {
+  it("should proxy requests", async () => {
     const axios = TypeMoq.Mock.ofType<AxiosInstance>();
     axios.setup(x => x.get("https://test.nl/@scope/test")).returns(async () => {
       return {

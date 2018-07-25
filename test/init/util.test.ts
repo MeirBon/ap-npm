@@ -9,7 +9,7 @@ import { AuthManager } from "../../src/auth";
 import AuthProvider from "../../src/auth/auth-provider";
 import IFS from "../../src/storage/filesystem/fs-interface";
 import { Buffer } from "buffer";
-import Filesystem from "../../lib/src/storage/filesystem";
+import Filesystem from "../../src/storage/filesystem";
 import Validator from "../../src/util/validator";
 import Logger from "../../src/util/logger";
 import { join } from "path";
