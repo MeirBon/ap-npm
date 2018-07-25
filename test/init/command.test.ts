@@ -5,7 +5,6 @@ import commandInit from "../../src/init/command-init";
 import Container from "../../src/util/container";
 import ServeCommand from "../../src/commands/serve";
 import InitCommand from "../../src/commands/init";
-import ConfigCommand from "../../src/commands/config";
 import Logger from "../../src/util/logger";
 import { Express } from "express";
 
@@ -16,7 +15,6 @@ describe("init:command", () => {
 
     expect(container.has("command-serve")).true;
     expect(container.has("command-init")).true;
-    expect(container.has("command-config")).true;
 
     const config = new Map<string, any>();
     config.set("ssl", {});
@@ -27,7 +25,5 @@ describe("init:command", () => {
       .to.be.instanceOf(ServeCommand);
     expect(container.get("command-init"))
       .to.be.instanceOf(InitCommand);
-    expect(container.get("command-config"))
-      .to.be.instanceOf(ConfigCommand);
   });
 });

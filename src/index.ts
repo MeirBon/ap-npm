@@ -13,8 +13,7 @@ export default class ApNpmApplication {
     if (typeof auth !== "undefined") {
       this.authProvider = auth;
     } else {
-      const map = new Map();
-      map.set("workDir", config.workDir);
+      const map = new Map<string, any>(Object.entries(config));
       this.authProvider = new JsonProvider(map, this.container.get("fs"));
     }
   }

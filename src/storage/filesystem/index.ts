@@ -10,9 +10,12 @@ import writePackage from "./utils/write-package";
 import writeNewPackage from "./utils/write-new-package";
 import getPackageListing from "./utils/get-package-listing";
 import Logger from "../../util/logger";
-import IStorageProvider, { IRequest } from "../storage-provider";
 import IFS from "./fs-interface";
+import { default as IStorageProvider, IRequest } from "../storage-provider";
 
+/**
+ * A simple class which forwards requested functions to the appropriate function
+ */
 export default class Filesystem implements IStorageProvider {
   private config: Map<string, any>;
   private readonly logger: Logger;
@@ -37,7 +40,8 @@ export default class Filesystem implements IStorageProvider {
       })
       .catch(err => {
         logger.error(
-          "Failed to initialize filesystem-structure in " + this.storageLocation,
+          "Failed to initialize filesystem-structure in " +
+            this.storageLocation,
           err
         );
       });
