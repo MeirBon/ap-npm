@@ -84,6 +84,6 @@ describe("routes:api-package", () => {
     const res = httpMocks.createResponse();
 
     await route.process(req, res);
-    expect(res.statusCode).to.equal(500);;
+    expect(res.statusCode).to.equal(500);
   });
 });
