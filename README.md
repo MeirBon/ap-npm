@@ -128,7 +128,7 @@ const myApplication = new ApNpm ({
 		key: "/path/to/key",
 		cert: "/path/to/cert"
 	}
-}, );
+}, new AuthProvider());
 
 myApplication.listen();
 
