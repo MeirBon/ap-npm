@@ -1,6 +1,5 @@
 import Route from "./route";
 import { Request, Response } from "express";
-import Filesystem from "../storage/filesystem";
 import IStorageProvider from "../storage/storage-provider";
 
 export default class Search extends Route {
@@ -19,8 +18,8 @@ export default class Search extends Route {
    * @returns {Promise<void>}
    */
   public async process(req: Request, res: Response): Promise<void> {
-    const query = req.query.text;
-    const size = req.query.size;
+    const query = typeof req.query.text === "string" ? req.query.text : "";
+    const size = req.query.size ? req.query.size : 20;
 
     const listing = await this.storage.getPackageListing();
     const objects: Array<IPackageSearchResult> = [];
@@ -65,7 +64,7 @@ export default class Search extends Route {
             scope: "unscoped",
             version: pkgJson["dist-tags"]["latest"],
             description: pkgJson.description,
-            keyword: pkgJson.keyword ? pkgJson.keywords : []
+            keyword: pkgJson.keywords ? pkgJson.keywords : []
           },
           score: {},
           searchScore: 1
@@ -73,7 +72,7 @@ export default class Search extends Route {
       }
     }
 
-    res.status(200).send({ objects });
+    res.status(200).send({ objects: objects });
   }
 }
 

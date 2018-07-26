@@ -3,10 +3,11 @@ import JsonProvider from "./auth/json-provider";
 import Container from "./util/container";
 import IStorageProvider, { IRequest } from "./storage/storage-provider";
 import Init, { IConfig } from "./init";
+import ServeCommand from "./commands/serve";
 
 export default class ApNpmApplication {
   private readonly container: Container;
-  private readonly authProvider: AuthProvider;
+  private readonly authProvider: AuthProvider | JsonProvider;
 
   constructor(config: IConfig, auth?: AuthProvider) {
     this.container = Init(config);
@@ -18,17 +19,13 @@ export default class ApNpmApplication {
     }
   }
 
-  public listen(): void {
+  public async listen(): Promise<void> {
+    if (this.authProvider instanceof JsonProvider)
+      await this.authProvider.storageInit();
     this.container.set("auth", this.authProvider);
-    this.container
-      .get("command-serve")
-      .run()
-      .then(() => 0);
+    const commandServe: ServeCommand = this.container.get("command-serve");
+    return commandServe.run();
   }
 }
 
-export {
-  AuthProvider,
-  IStorageProvider,
-  IRequest
-};
+export { AuthProvider, IStorageProvider, IRequest };

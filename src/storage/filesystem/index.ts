@@ -34,17 +34,19 @@ export default class Filesystem implements IStorageProvider {
 
     fs.exists(this.storageLocation)
       .then(result => {
-        if (!result) {
-          return fs.createDirectory(this.storageLocation);
+        if (result !== true) {
+          return fs.createDirectory(this.storageLocation).then(() => {});
         }
       })
       .catch(err => {
         logger.error(
-          "Failed to initialize filesystem-structure in " +
-            this.storageLocation,
+          `Failed to initialize filesystem-structure in ${
+            this.storageLocation
+          }`,
           err
         );
-      });
+      })
+      .then(() => {});
   }
 
   public async removePackage(request: IRequest): Promise<boolean> {

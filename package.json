@@ -95,7 +95,15 @@
     ],
     "exclude": [
       "**/*.d.ts",
-      "lib/**/*"
+      "lib/**/*",
+      "src/storage/storage-provider.ts",
+      "src/storage/filesystem/fs-interface.ts",
+      "src/storage/filesystem/index.ts",
+      "src/cli.ts",
+      "src/init.ts",
+      "src/index.ts",
+      "src/routes.ts",
+      "src/commands/*"
     ],
     "reporter": [
       "json",
