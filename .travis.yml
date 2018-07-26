@@ -5,7 +5,8 @@ node_js:
 install:
   - npm install
 scripts:
+  - npm install nyc -g
   - npm install codecov -g
-  - npm run test-coverage
+  - nyc npm test
 after_success:
   - codecov
