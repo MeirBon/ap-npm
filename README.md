@@ -62,7 +62,7 @@ const myApplication = new ApNpm ({
 	port: 4444,
 	hostname: "https://localhost:4444",
 	proxyEnabled: false,
-	proxyUrl: "https://registr.npmjs.org",
+	proxyUrl: "https://registry.npmjs.org",
 	proxyAudit: false,
 	auth: {
 		users: {
@@ -114,7 +114,7 @@ const myApplication = new ApNpm ({
 	port: 4444,
 	hostname: "https://localhost:4444",
 	proxyEnabled: false,
-	proxyUrl: "https://registr.npmjs.org",
+	proxyUrl: "https://registry.npmjs.org",
 	proxyAudit: false,
 	auth: {
 		users: {
