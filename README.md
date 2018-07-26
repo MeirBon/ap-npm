@@ -29,6 +29,111 @@ ap-npm init
 ```
 This runs `npm init` in the current folder and adds a publishConfig to the package.json from your ap-npm config
 
+### Creating own auth-provider
+ap-npm is written in Typescript and thus writing your own Authentication
+ should preferably be done in Typescript as well. Example of using your 
+ own AuthProvider:
+``` typescript
+import { default as ApNpm, AuthProvider } from "ap-npm";
+
+class MyAuthProvider extends AuthProvider {
+	userLogin(username: string, password: string, email?: string): Promise<string> {
+		throw new Error("Method not implemented.");
+	}
+	userAdd(username: string, password: string, email: string): Promise<string> {
+		throw new Error("Method not implemented.");
+	}
+	userRemove(username: string, password: string): Promise<boolean> {
+		throw new Error("Method not implemented.");
+	}
+	userLogout(token: string): Promise<boolean> {
+		throw new Error("Method not implemented.");
+	}
+	verifyToken(token: string): Promise<string> {
+		throw new Error("Method not implemented.");
+	}
+}
+
+const myApplication = new ApNpm ({
+	workDir: "/ap-npm",
+	storage: {
+		directory: "storage",
+	},
+	port: 4444,
+	hostname: "https://localhost:4444",
+	proxyEnabled: false,
+	proxyUrl: "https://registr.npmjs.org",
+	auth: {
+		users: {
+			canPublish: true,
+			canAccess: true,
+		},
+		register: true,
+		public: false,
+		remove: true,
+	},
+	ssl: {
+		enabled: true,
+		key: "/path/to/key",
+		cert: "/path/to/cert"
+	}
+}, new MyAuthProvider());
+
+myApplication.listen();
+```
+
+Implementing your AuthProvider in NodeJS is possible as well:
+``` nodejs
+const ApNpm = require("ap-npm").default;
+const AuthProvider = require("ap-npm").AuthProvider;
+
+class MyAuthProvider extends AuthProvider {
+	userLogin(username, password, email) {
+		throw "Method not implemented.";
+	}
+	userAdd(username, password, email) {
+		throw "Method not implemented.";
+	}
+	userRemove(username, password) {
+		throw "Method not implemented.";
+	}
+	userLogout(token) {
+		throw "Method not implemented.";
+	}
+	verifyToken(token) {
+		throw "Method not implemented.";
+	}
+}
+
+const myApplication = new ApNpm ({
+	workDir: "/ap-npm",
+	storage: {
+		directory: "storage",
+	},
+	port: 4444,
+	hostname: "https://localhost:4444",
+	proxyEnabled: false,
+	proxyUrl: "https://registr.npmjs.org",
+	auth: {
+		users: {
+			canPublish: true,
+			canAccess: true,
+		},
+		register: true,
+		public: false,
+		remove: true,
+	},
+	ssl: {
+		enabled: true,
+		key: "/path/to/key",
+		cert: "/path/to/cert"
+	}
+}, );
+
+myApplication.listen();
+
+```
+
 ## Dependencies
 ap-npm has been tested with:
 - npm: 3.10 or higher
