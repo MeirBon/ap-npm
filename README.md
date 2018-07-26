@@ -83,7 +83,7 @@ myApplication.listen();
 ```
 
 Implementing your AuthProvider in NodeJS is possible as well:
-``` nodejs
+``` js
 const ApNpm = require("ap-npm").default;
 const AuthProvider = require("ap-npm").AuthProvider;
 
