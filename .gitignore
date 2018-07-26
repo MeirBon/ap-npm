@@ -5,7 +5,9 @@
 /lib
 package-lock.json
 
+# code coverage
 coverage/
+codecov.yml
 
 # ide
 .idea/
