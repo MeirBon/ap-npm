@@ -8,6 +8,7 @@ package-lock.json
 # code coverage
 coverage/
 codecov.yml
+coverage.lcov
 
 # ide
 .idea/
