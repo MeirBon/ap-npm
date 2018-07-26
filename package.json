@@ -5,16 +5,17 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
-    "watch": "tsc -w",
+    "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
+    "lint": "eslint src/**/*.ts && tslint src/**/*.ts",
+    "prepublish": "npm run build",
     "start": "npm run serve",
     "serve": "node lib/cli.js s",
     "serve-ts": "ts-node src/cli.ts s",
-    "lint": "eslint src/**/*.ts && tslint src/**/*.ts",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
     "test": "mocha",
     "test-coverage": "nyc npm test",
     "test-report": "nyc report",
-    "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
+    "watch": "tsc -w"
   },
   "bin": {
     "ap-npm": "./bin/ap-npm"
