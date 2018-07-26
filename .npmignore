@@ -8,7 +8,10 @@
 .idea/
 .vs/
 .vscode/
+coverage/
 npm-debug.log
+coverage.lcov
+.nyc_output
 
 *.crt
 *.key

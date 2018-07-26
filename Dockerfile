@@ -1,10 +1,10 @@
 FROM node:boron
 
 RUN mkdir /app
-RUN mkdir /app/src
+RUN mkdir /app/lib
 RUN mkdir /app/bin
 
-COPY src /app/src
+COPY src /app/lib
 COPY bin /app/bin
 COPY package.json /app/package.json
 COPY config.json /app/config.json
