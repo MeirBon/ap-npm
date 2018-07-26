@@ -22,10 +22,6 @@ npm install -g ap-npm
 ```
 ap-npm serve
 ```
-##### List/change config
-```
-ap-npm config [prop] [value]
-```
 ##### Setup npm project with ap-npm publishConfig
 ```
 ap-npm init
