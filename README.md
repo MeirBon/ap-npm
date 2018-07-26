@@ -63,6 +63,7 @@ const myApplication = new ApNpm ({
 	hostname: "https://localhost:4444",
 	proxyEnabled: false,
 	proxyUrl: "https://registr.npmjs.org",
+	proxyAudit: false,
 	auth: {
 		users: {
 			canPublish: true,
@@ -114,6 +115,7 @@ const myApplication = new ApNpm ({
 	hostname: "https://localhost:4444",
 	proxyEnabled: false,
 	proxyUrl: "https://registr.npmjs.org",
+	proxyAudit: false,
 	auth: {
 		users: {
 			canPublish: true,

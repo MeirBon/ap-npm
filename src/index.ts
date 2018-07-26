@@ -9,13 +9,17 @@ export default class ApNpmApplication {
   private readonly container: Container;
   private readonly authProvider: AuthProvider | JsonProvider;
 
-  constructor(config: IConfig, auth?: AuthProvider) {
+  constructor(config: IConfig, auth?: AuthProvider, storage?: IStorageProvider) {
     this.container = Init(config);
     if (typeof auth !== "undefined") {
       this.authProvider = auth;
     } else {
       const map = new Map<string, any>(Object.entries(config));
       this.authProvider = new JsonProvider(map, this.container.get("fs"));
+    }
+
+    if (typeof storage !== "undefined") {
+      this.container.set("storage", storage);
     }
   }
 

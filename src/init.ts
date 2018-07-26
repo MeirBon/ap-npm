@@ -44,6 +44,7 @@ export interface IConfig {
   hostname: string;
   proxyEnabled: boolean;
   proxyUrl: Url;
+  proxyAudit: boolean;
   auth: {
     users: {
       canPublish: boolean;
